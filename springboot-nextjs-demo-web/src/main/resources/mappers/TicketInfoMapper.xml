@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gcbjs.demo.mappers.TicketInfoMapper">
+    <resultMap id="BaseResultMap" type="com.gcbjs.demo.mappers.model.TicketInfo">
+        <id property="ticketId" column="ticket_id" jdbcType="BIGINT"/>
+        <result property="ticketStatus" column="ticket_status" jdbcType="VARCHAR"/>
+        <result property="dispatchTime" column="dispatch_time" jdbcType="TIMESTAMP"/>
+        <result property="priority" column="priority" jdbcType="INTEGER"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="receiverId" column="receiver_id" jdbcType="BIGINT"/>
+        <result property="receiverName" column="receiver_name" jdbcType="VARCHAR"/>
+
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        ticket_id, ticket_status, dispatch_time, priority, create_time, update_time, receiver_id, receiver_name
+    </sql>
+
+    <insert id="insert" keyColumn="account_id" keyProperty="accountId"
+            parameterType="com.gcbjs.demo.mappers.model.TicketInfo" useGeneratedKeys="true">
+        insert into ticket_info(
+            ticket_status, dispatch_time, priority, receiver_id, receiver_name
+        ) values(
+            #{ticketStatus,jdbcType=VARCHAR},
+            #{dispatchTime,jdbcType=TIMESTAMP},
+            #{priority,jdbcType=INTEGER},
+            #{receiverId,jdbcType=BIGINT},
+            #{receiverName,jdbcType=VARCHAR}
+        )
+    </insert>
+
+
+    <update id="update" parameterType="com.gcbjs.demo.mappers.model.TicketInfo">
+        update ticket_info
+        <set>
+            <if test="ticketStatus != null">
+                ticket_status = #{ticketStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="dispatchTime != null">
+                dispatch_time = #{dispatchTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="priority != null">
+                priority = #{priority,jdbcType=INTEGER},
+            </if>
+            <if test="receiverId != null">
+                receiver_id = #{receiverId,jdbcType=BIGINT},
+            </if>
+            <if test="receiverName != null">
+                receiver_name = #{receiverName,jdbcType=VARCHAR},
+            </if>
+        </set>
+        <where>
+            ticket_id = #{ticketId,jdbcType=BIGINT}
+        </where>
+    </update>
+
+    <select id="findByTicketId" resultMap="BaseResultMap" >
+        select
+        <include refid="Base_Column_List"/>
+        from ticket_info
+        where ticket_id = #{ticketId,jdbcType=BIGINT}
+    </select>
+
+</mapper>
