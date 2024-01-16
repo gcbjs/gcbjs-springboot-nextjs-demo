@@ -10,23 +10,20 @@
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
         <result property="receiverId" column="receiver_id" jdbcType="BIGINT"/>
         <result property="receiverName" column="receiver_name" jdbcType="VARCHAR"/>
-
+        <result property="finishTime" column="finish_time" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        ticket_id, ticket_status, dispatch_time, priority, create_time, update_time, receiver_id, receiver_name
+        ticket_id, ticket_status, dispatch_time, priority, create_time, update_time, receiver_id, receiver_name,finish_time
     </sql>
 
-    <insert id="insert" keyColumn="account_id" keyProperty="accountId"
+    <insert id="insert" keyColumn="ticket_id" keyProperty="ticketId"
             parameterType="com.gcbjs.demo.mappers.model.TicketInfo" useGeneratedKeys="true">
         insert into ticket_info(
-            ticket_status, dispatch_time, priority, receiver_id, receiver_name
+            ticket_status,priority
         ) values(
             #{ticketStatus,jdbcType=VARCHAR},
-            #{dispatchTime,jdbcType=TIMESTAMP},
-            #{priority,jdbcType=INTEGER},
-            #{receiverId,jdbcType=BIGINT},
-            #{receiverName,jdbcType=VARCHAR}
+            #{priority,jdbcType=INTEGER}
         )
     </insert>
 
@@ -49,6 +46,9 @@
             <if test="receiverName != null">
                 receiver_name = #{receiverName,jdbcType=VARCHAR},
             </if>
+            <if test="finishTime != null">
+                finish_time = #{finishTime,jdbcType=TIMESTAMP},
+            </if>
         </set>
         <where>
             ticket_id = #{ticketId,jdbcType=BIGINT}
@@ -60,6 +60,13 @@
         <include refid="Base_Column_List"/>
         from ticket_info
         where ticket_id = #{ticketId,jdbcType=BIGINT}
+    </select>
+
+    <select id="findWaitingTickets" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from ticket_info
+        where ticket_status = 'WAITING'
     </select>
 
 </mapper>

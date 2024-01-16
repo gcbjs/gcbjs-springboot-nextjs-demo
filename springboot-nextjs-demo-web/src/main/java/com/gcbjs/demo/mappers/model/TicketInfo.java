@@ -1,5 +1,6 @@
 package com.gcbjs.demo.mappers.model;
 
+import com.gcbjs.demo.constants.Constants;
 import com.gcbjs.demo.constants.TicketStatusEnum;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -55,6 +56,11 @@ public class TicketInfo {
      */
     String receiverName;
 
+    /**
+     * 完成时间
+     */
+    LocalDateTime finishTime;
+
     protected TicketInfo() {
     }
 
@@ -66,12 +72,11 @@ public class TicketInfo {
     /**
      * 创建工单
      *
-     * @param priority
      * @return com.gcbjs.demo.repository.model.TicketEntity
      * @date: 2024/1/15 15:41
      */
-    public static TicketInfo create(Integer priority) {
-        return new TicketInfo(TicketStatusEnum.WAITING, priority);
+    public static TicketInfo create() {
+        return new TicketInfo(TicketStatusEnum.WAITING, Constants.DEFAULT_PRIORITY);
     }
 
 
@@ -99,6 +104,7 @@ public class TicketInfo {
      */
     public void handled() {
         this.ticketStatus = TicketStatusEnum.HANDLED;
+        this.finishTime = LocalDateTime.now();
     }
 
     /**
@@ -118,6 +124,17 @@ public class TicketInfo {
         if (LocalDateTime.now().minusMinutes(10).isAfter(this.createTime)) {
             this.priority++;
         }
+    }
+
+    /**
+     * 判断工单是否可以被处理
+     *
+     * @param
+     * @return boolean
+     * @date: 2024/1/16 15:30
+     */
+    public boolean canBeDispatch() {
+        return this.ticketStatus == TicketStatusEnum.WAITING;
     }
 
 }

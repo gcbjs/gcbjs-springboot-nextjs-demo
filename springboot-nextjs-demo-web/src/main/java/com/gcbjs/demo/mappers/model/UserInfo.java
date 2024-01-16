@@ -5,6 +5,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
+
 /**
  * @ClassName UserEntity
  * @Description 业务员实体
@@ -20,7 +22,6 @@ public class UserInfo {
      * 用户id
      */
     Long userId;
-
     /**
      * 姓名
      */
@@ -34,4 +35,21 @@ public class UserInfo {
      * 工作状态
      */
     WorkStatusEnum workStatus;
+
+    /**
+     * 更新时间
+     */
+    LocalDateTime updateTime;
+
+    public void working() {
+        this.workStatus = WorkStatusEnum.WORKING;
+    }
+
+    public void free() {
+        this.workStatus = WorkStatusEnum.FREE;
+    }
+
+    public boolean checkNoWorking() {
+        return this.workStatus == WorkStatusEnum.FREE;
+    }
 }

@@ -20,6 +20,8 @@ public enum WorkStatusEnum {
      * 工作中
      */
     WORKING("工作中"),
+
+    FREE("空闲"),
     ;
 
     private String desc;

@@ -19,4 +19,8 @@ public interface UserInfoMapper {
     UserInfo findByUserId(@Param("userId") Long userId);
 
     List<UserInfo> findAll();
+
+    List<UserInfo> findUsersByStatus(@Param("workStatus") String workStatus);
+
+    int updateStatus(UserInfo userInfo);
 }
