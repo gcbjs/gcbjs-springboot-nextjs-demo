@@ -5,12 +5,14 @@ import com.gcbjs.demo.mappers.UserInfoMapper;
 import com.gcbjs.demo.mappers.model.TicketInfo;
 import com.gcbjs.demo.mappers.model.UserInfo;
 import com.gcbjs.demo.server.plana.cmd.DispatchTaskCmd;
+import com.gcbjs.demo.util.RedisLock;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @ClassName TicketAppService
@@ -27,6 +29,9 @@ public class TicketAppService {
     private TicketInfoMapper ticketInfoMapper;
     @Resource
     private UserInfoMapper userInfoMapper;
+    @Resource
+    private RedisLock redisLock;
+
     /**
      * 监听工单请求，创建派单工单
      * 调用派单主线程，去分配任务
@@ -44,21 +49,35 @@ public class TicketAppService {
      */
     @Transactional(rollbackFor = Exception.class)
     public Boolean dispatch(DispatchTaskCmd dispatchTaskCmd) {
-        UserInfo userInfo = userInfoMapper.findByUserId(dispatchTaskCmd.getUserId());
-        if (!userInfo.checkNoWorking()) {
-            log.error("业务员状态不正确，业务员id:{},重新分配", userInfo.getUserId());
-            return Boolean.FALSE;
-        }
-        TicketInfo ticketInfo = ticketInfoMapper.findByTicketId(dispatchTaskCmd.getTicketId());
-        if (!ticketInfo.canBeDispatch()) {
-            log.error("工单状态不正确，工单id:{}", ticketInfo.getTicketId());
+        String value = UUID.randomUUID().toString();
+        String key = "dispatch:userId:" + dispatchTaskCmd.getUserId();
+        try{
+            boolean lock = redisLock.lock(key, value, 1000L);
+            if (!lock) {
+                log.error("获取锁失败");
+                return Boolean.FALSE;
+            }
+            UserInfo userInfo = userInfoMapper.findByUserId(dispatchTaskCmd.getUserId());
+            if (!userInfo.checkNoWorking()) {
+                log.error("业务员状态不正确，业务员id:{},重新分配", userInfo.getUserId());
+                return Boolean.FALSE;
+            }
+            TicketInfo ticketInfo = ticketInfoMapper.findByTicketId(dispatchTaskCmd.getTicketId());
+            if (!ticketInfo.canBeDispatch()) {
+                log.error("工单状态不正确，工单id:{}", ticketInfo.getTicketId());
+                return Boolean.TRUE;
+            }
+            ticketInfo.dispatch(userInfo.getName(),userInfo.getUserId());
+            userInfo.working();
+            ticketInfoMapper.update(ticketInfo);
+            userInfoMapper.updateStatus(userInfo);
             return Boolean.TRUE;
+        }catch (Exception e) {
+            log.error("分配失败",e);
+            return Boolean.FALSE;
+        }finally {
+            redisLock.releaseLock(key, value);
         }
-        ticketInfo.dispatch(userInfo.getName(),userInfo.getUserId());
-        userInfo.working();
-        ticketInfoMapper.update(ticketInfo);
-        userInfoMapper.updateStatus(userInfo);
-        return Boolean.TRUE;
     }
 
 

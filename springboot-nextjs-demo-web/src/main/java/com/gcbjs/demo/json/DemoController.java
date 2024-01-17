@@ -7,7 +7,9 @@ import com.gcbjs.demo.mappers.model.TicketInfo;
 import com.gcbjs.demo.mappers.model.UserInfo;
 import com.gcbjs.demo.server.plana.TicketAppService;
 import com.gcbjs.demo.server.plana.TicketQueue;
+import com.gcbjs.demo.util.RedisLock;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -25,6 +28,7 @@ import java.util.stream.Collectors;
  * @Date 2024/1/12 17:58
  * @Version 1.0
  **/
+@Slf4j
 @RestController
 @RequestMapping("/api")
 public class DemoController {
@@ -33,6 +37,8 @@ public class DemoController {
     private UserInfoMapper userInfoMapper;
     @Resource
     private TicketAppService ticketAppService;
+    @Resource
+    private RedisLock redisLock;
 
 
 
@@ -98,6 +104,27 @@ public class DemoController {
     /**
      * 工单手动改派
      */
+
+    @RequestMapping(path = "/testRedisLock",method = RequestMethod.POST)
+    public boolean testRedisLock(@RequestParam("randomId") String randomId) {
+        String value = UUID.randomUUID().toString();
+        String key = "demo:testLock:" + randomId;
+        try{
+            boolean lock = redisLock.lock(key, value, 1000L);
+            if (!lock) {
+                log.error("获取锁失败");
+                return false;
+            }
+            Thread.sleep(500L);
+            log.info("获取锁成功");
+            return true;
+        }catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }finally {
+            redisLock.releaseLock(key, value);
+        }
+    }
 
 
 

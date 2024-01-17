@@ -40,7 +40,7 @@ public class DispatchTaskThread implements Runnable {
             if (CollectionUtils.isEmpty(freeUsers)) {
                 log.info("没有空闲的业务员,工单重新放入队列");
                 // 等待五秒钟重新派单
-                Thread.sleep(5000);
+                Thread.sleep(2000);
                 TicketQueue.getInstance().put(this.ticketId);
                 return;
             }
