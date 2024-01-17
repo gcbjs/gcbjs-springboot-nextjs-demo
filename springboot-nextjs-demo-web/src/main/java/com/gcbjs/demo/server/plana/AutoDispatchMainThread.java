@@ -34,7 +34,7 @@ public class AutoDispatchMainThread implements CommandLineRunner {
         log.info("自动派单主线程启动");
         try{
             while (!isStop) {
-                Long ticketId = TicketQueue.getInstance().take();
+                Long ticketId = TicketQueue.getInstance().takeTicket();
                 if (Objects.nonNull(ticketId)) {
                     createDispatchTaskThread(ticketId);
                 }

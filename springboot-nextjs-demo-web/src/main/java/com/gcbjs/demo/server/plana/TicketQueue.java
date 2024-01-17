@@ -21,8 +21,12 @@ public class TicketQueue {
 
     private final BlockingQueue<Long> waitingTicketQueue;
 
+    private final BlockingQueue<AuditLog> auditLogQueue;
+
+
     private TicketQueue() {
         waitingTicketQueue = new LinkedBlockingQueue<>();
+        auditLogQueue = new LinkedBlockingQueue<>();
     }
 
     public static TicketQueue getInstance() {
@@ -36,17 +40,23 @@ public class TicketQueue {
      * @return int
      * @date: 2024/1/16 14:01
      */
-    public int getSize() {
+    public int getWaitingQueueSize() {
         return waitingTicketQueue.size();
     }
 
+
+    public int getAuditLogQueueSize() {
+        return auditLogQueue.size();
+    }
+
     /**
-    * 添加工单
-    * @param ticketId
-    * @return void
-    * @date: 2024/1/16 14:12
-    */
-    public void put(Long ticketId) {
+     * 添加工单
+     *
+     * @param ticketId
+     * @return void
+     * @date: 2024/1/16 14:12
+     */
+    public void putTicket(Long ticketId) {
         try {
             waitingTicketQueue.put(ticketId);
         } catch (InterruptedException e) {
@@ -55,7 +65,7 @@ public class TicketQueue {
     }
 
 
-    public void putAll(List<Long> ticketIds) {
+    public void putAllTicket(List<Long> ticketIds) {
         if (CollectionUtils.isEmpty(ticketIds)) {
             return;
         }
@@ -63,17 +73,42 @@ public class TicketQueue {
     }
 
     /**
-    * 获取工单
-    * @param 
-    * @return java.lang.Long
-    * @date: 2024/1/16 14:12
-    */
-    public Long take() {
+     * 获取工单
+     *
+     * @param
+     * @return java.lang.Long
+     * @date: 2024/1/16 14:12
+     */
+    public Long takeTicket() {
         try {
             return waitingTicketQueue.take();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public AuditLog takeAuditLog() {
+        try {
+            return auditLogQueue.take();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public void putAuditLog(AuditLog auditLog) {
+        try {
+            auditLogQueue.put(auditLog);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void putAllAuditLog(List<AuditLog> auditLogs) {
+        if (CollectionUtils.isEmpty(auditLogs)) {
+            return;
+        }
+        auditLogQueue.addAll(auditLogs);
     }
 }

@@ -3,6 +3,7 @@ package com.gcbjs.demo;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * @ClassName DemoApplication
@@ -11,6 +12,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @Date 2024/1/12 17:20
  * @Version 1.0
  **/
+@EnableScheduling
 @SpringBootApplication
 @MapperScan("com.gcbjs.demo.mappers")
 public class DemoApplication {

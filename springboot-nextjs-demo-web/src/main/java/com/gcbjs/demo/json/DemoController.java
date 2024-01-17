@@ -73,7 +73,7 @@ public class DemoController {
         if (CollectionUtils.isEmpty(waitingList)) {
             return;
         }
-        TicketQueue.getInstance().putAll(waitingList.stream().map(TicketInfo::getTicketId).toList());
+        TicketQueue.getInstance().putAllTicket(waitingList.stream().map(TicketInfo::getTicketId).toList());
     }
 
 
@@ -100,6 +100,10 @@ public class DemoController {
      * 实时获取每日工单数据
      * 待分配、处理中、已处理
      */
+    @RequestMapping(path = "/getDailyDataInRealTime",method = RequestMethod.GET)
+    public Map<String,Integer> getDailyDataInRealTime() {
+        return null;
+    }
 
     /**
      * 工单手动改派

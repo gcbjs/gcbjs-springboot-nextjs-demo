@@ -1,5 +1,6 @@
 package com.gcbjs.demo.server.plana;
 
+import com.gcbjs.demo.mappers.model.TicketInfo;
 import com.gcbjs.demo.mappers.model.UserInfo;
 import com.gcbjs.demo.server.plana.cmd.DispatchTaskCmd;
 import lombok.extern.slf4j.Slf4j;
@@ -7,6 +8,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @ClassName DispatchTaskThread
@@ -41,7 +43,7 @@ public class DispatchTaskThread implements Runnable {
                 log.info("没有空闲的业务员,工单重新放入队列");
                 // 等待五秒钟重新派单
                 Thread.sleep(2000);
-                TicketQueue.getInstance().put(this.ticketId);
+                TicketQueue.getInstance().putTicket(this.ticketId);
                 return;
             }
             //开始选择业务员
@@ -50,16 +52,21 @@ public class DispatchTaskThread implements Runnable {
                     .userId(userInfo.getUserId())
                     .ticketId(this.ticketId)
                     .build();
-            Boolean dispatch = ticketAppService.dispatch(dispatchTaskCmd);
-            if (dispatch) {
+            TicketInfo ticketInfo = ticketAppService.dispatch(dispatchTaskCmd);
+            if (Objects.nonNull(ticketInfo)) {
                 log.info("派单成功,工单id:{},业务员id:{}", this.ticketId, userInfo.getUserId());
+                TicketQueue.getInstance().putAuditLog(AuditLog.builder()
+                                .dispatchTime(ticketInfo.getDispatchTime())
+                                .ticketId(ticketInfo.getTicketId())
+                                .userId(ticketInfo.getReceiverId())
+                        .build());
                 return;
             }
             log.info("派单失败,重新放入队列");
-            TicketQueue.getInstance().put(this.ticketId);
+            TicketQueue.getInstance().putTicket(this.ticketId);
         }catch (Exception e){
             log.error("派单异常,重新放入队列",e);
-            TicketQueue.getInstance().put(this.ticketId);
+            TicketQueue.getInstance().putTicket(this.ticketId);
         }
     }
 

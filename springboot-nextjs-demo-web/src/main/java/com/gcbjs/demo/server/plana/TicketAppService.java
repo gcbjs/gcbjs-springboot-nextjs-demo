@@ -41,44 +41,41 @@ public class TicketAppService {
         TicketInfo ticketInfo = TicketInfo.create();
         ticketInfoMapper.insert(ticketInfo);
         //加入工单队列
-        TicketQueue.getInstance().put(ticketInfo.getTicketId());
+        TicketQueue.getInstance().putTicket(ticketInfo.getTicketId());
     }
 
     /**
      * 派单
      */
     @Transactional(rollbackFor = Exception.class)
-    public Boolean dispatch(DispatchTaskCmd dispatchTaskCmd) {
+    public TicketInfo dispatch(DispatchTaskCmd dispatchTaskCmd) {
         String value = UUID.randomUUID().toString();
         String key = "dispatch:userId:" + dispatchTaskCmd.getUserId();
         try{
             boolean lock = redisLock.lock(key, value, 1000L);
             if (!lock) {
                 log.error("获取锁失败");
-                return Boolean.FALSE;
+                return null;
             }
             UserInfo userInfo = userInfoMapper.findByUserId(dispatchTaskCmd.getUserId());
             if (!userInfo.checkNoWorking()) {
-                log.error("业务员状态不正确，业务员id:{},重新分配", userInfo.getUserId());
-                return Boolean.FALSE;
+                log.error("业务员工作中，业务员id:{},重新分配", userInfo.getUserId());
+                return null;
             }
             TicketInfo ticketInfo = ticketInfoMapper.findByTicketId(dispatchTaskCmd.getTicketId());
-            if (!ticketInfo.canBeDispatch()) {
-                log.error("工单状态不正确，工单id:{}", ticketInfo.getTicketId());
-                return Boolean.TRUE;
-            }
             ticketInfo.dispatch(userInfo.getName(),userInfo.getUserId());
             userInfo.working();
             ticketInfoMapper.update(ticketInfo);
             userInfoMapper.updateStatus(userInfo);
-            return Boolean.TRUE;
+            return ticketInfo;
         }catch (Exception e) {
-            log.error("分配失败",e);
-            return Boolean.FALSE;
+            log.error("工单分配失败，重新分配",e);
+            return null;
         }finally {
             redisLock.releaseLock(key, value);
         }
     }
+
 
 
     public List<TicketInfo> getWaitingList() {
@@ -101,5 +98,6 @@ public class TicketAppService {
         ticketInfoMapper.update(ticketInfo);
         userInfoMapper.updateStatus(userInfo);
     }
+
 
 }
