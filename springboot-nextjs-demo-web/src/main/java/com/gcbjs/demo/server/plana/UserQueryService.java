@@ -21,14 +21,9 @@ public class UserQueryService {
     @Resource
     private UserInfoMapper userInfoMapper;
 
-    /**
-    * 获取空闲的业务员
-    * @param
-    * @return java.util.List<com.gcbjs.demo.mappers.model.UserInfo>
-    * @date: 2024/1/16 16:31
-    */
-    public List<UserInfo> getFreeUsers() {
-        return userInfoMapper.findUsersByStatus(WorkStatusEnum.FREE.name());
+
+    public List<UserInfo> getUsersByUserIds(List<Long> userIds) {
+        return userInfoMapper.fetchListByUserIds(userIds);
     }
 
 }

@@ -36,6 +36,8 @@ public class UserInfo {
      */
     WorkStatusEnum workStatus;
 
+    LocalDateTime createTime;
+
     /**
      * 更新时间
      */

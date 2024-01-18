@@ -20,7 +20,7 @@ public interface UserInfoMapper {
 
     List<UserInfo> findAll();
 
-    List<UserInfo> findUsersByStatus(@Param("workStatus") String workStatus);
+    List<UserInfo> fetchListByUserIds(@Param("userIds") List<Long> userIds);
 
     int updateStatus(UserInfo userInfo);
 }

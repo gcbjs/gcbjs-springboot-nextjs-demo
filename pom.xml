@@ -19,10 +19,13 @@
         <springboot-nextjs-demo-web.version>1.0.0-SNAPSHOT</springboot-nextjs-demo-web.version>
         <fastjson.version>1.2.69</fastjson.version>
         <lombok.version>1.18.24</lombok.version>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
     </properties>
 
     <modules>
         <module>springboot-nextjs-demo-web</module>
+        <module>springboot-nextjs-app</module>
     </modules>
 
     <dependencyManagement>

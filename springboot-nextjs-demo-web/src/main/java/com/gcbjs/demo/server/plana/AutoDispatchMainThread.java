@@ -1,5 +1,6 @@
 package com.gcbjs.demo.server.plana;
 
+import com.gcbjs.demo.server.ScheduleAppService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -26,6 +27,8 @@ public class AutoDispatchMainThread implements CommandLineRunner {
     private TicketAppService ticketAppService;
     @Resource
     private UserQueryService userAppService;
+    @Resource
+    private ScheduleAppService scheduleAppService;
 
     private boolean isStop = false;
 
@@ -47,7 +50,8 @@ public class AutoDispatchMainThread implements CommandLineRunner {
     private void createDispatchTaskThread(Long ticketId) {
         DispatchTaskThread dispatchTaskThread = new DispatchTaskThread(ticketId,
                 ticketAppService,
-                userAppService);
+                userAppService,
+                scheduleAppService);
         ticketTaskExecutor.execute(dispatchTaskThread);
     }
 }

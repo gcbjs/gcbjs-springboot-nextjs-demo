@@ -5,6 +5,7 @@ import com.gcbjs.demo.json.vo.UserInfoVO;
 import com.gcbjs.demo.mappers.UserInfoMapper;
 import com.gcbjs.demo.mappers.model.TicketInfo;
 import com.gcbjs.demo.mappers.model.UserInfo;
+import com.gcbjs.demo.server.ScheduleAppService;
 import com.gcbjs.demo.server.plana.TicketAppService;
 import com.gcbjs.demo.server.plana.TicketQueue;
 import com.gcbjs.demo.util.RedisLock;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -38,17 +40,16 @@ public class DemoController {
     @Resource
     private TicketAppService ticketAppService;
     @Resource
-    private RedisLock redisLock;
+    private ScheduleAppService scheduleAppService;
 
 
-
-    @RequestMapping(path = "/list",method = RequestMethod.GET)
+    @RequestMapping(path = "/list", method = RequestMethod.GET)
     public List<String> getList() {
-        return List.of("a","b","c");
+        return List.of("a", "b", "c");
     }
 
 
-    @RequestMapping(path = "/userList",method = RequestMethod.GET)
+    @RequestMapping(path = "/userList", method = RequestMethod.GET)
     public List<UserInfoVO> userList() {
         List<UserInfo> list = userInfoMapper.findAll();
         return list.stream().map(UserInfoVO::of).toList();
@@ -58,7 +59,7 @@ public class DemoController {
     /**
      * 手动生成工单
      */
-    @RequestMapping(path = "/createTicket",method = RequestMethod.POST)
+    @RequestMapping(path = "/createTicket", method = RequestMethod.POST)
     public void createTicket() {
         ticketAppService.receiveTicket();
     }
@@ -67,7 +68,7 @@ public class DemoController {
     /**
      * 启动后，补全等待队列
      */
-    @RequestMapping(path = "/initWaitingTickets",method = RequestMethod.POST)
+    @RequestMapping(path = "/initWaitingTickets", method = RequestMethod.POST)
     public void initWaitingTickets() {
         List<TicketInfo> waitingList = ticketAppService.getWaitingList();
         if (CollectionUtils.isEmpty(waitingList)) {
@@ -77,13 +78,11 @@ public class DemoController {
     }
 
 
-
-
     /**
      * 实时获取用户队列
      */
-    @RequestMapping(path = "/getUserQueue",method = RequestMethod.GET)
-    public Map<WorkStatusEnum,List<UserInfoVO>> getUserQueue() {
+    @RequestMapping(path = "/getUserQueue", method = RequestMethod.GET)
+    public Map<WorkStatusEnum, List<UserInfoVO>> getUserQueue() {
         List<UserInfo> all = userInfoMapper.findAll();
         //按照状态分组
         return all.stream()
@@ -91,7 +90,7 @@ public class DemoController {
                         Collectors.mapping(UserInfoVO::of, Collectors.toList())));
     }
 
-    @RequestMapping(path = "/finishTicket",method = RequestMethod.POST)
+    @RequestMapping(path = "/finishTicket", method = RequestMethod.POST)
     public void finishTicket(@RequestParam("ticketId") Long ticketId) {
         ticketAppService.finish(ticketId);
     }
@@ -100,8 +99,8 @@ public class DemoController {
      * 实时获取每日工单数据
      * 待分配、处理中、已处理
      */
-    @RequestMapping(path = "/getDailyDataInRealTime",method = RequestMethod.GET)
-    public Map<String,Integer> getDailyDataInRealTime() {
+    @RequestMapping(path = "/getDailyDataInRealTime", method = RequestMethod.GET)
+    public Map<String, Integer> getDailyDataInRealTime() {
         return null;
     }
 
@@ -109,27 +108,22 @@ public class DemoController {
      * 工单手动改派
      */
 
-    @RequestMapping(path = "/testRedisLock",method = RequestMethod.POST)
-    public boolean testRedisLock(@RequestParam("randomId") String randomId) {
-        String value = UUID.randomUUID().toString();
-        String key = "demo:testLock:" + randomId;
-        try{
-            boolean lock = redisLock.lock(key, value, 1000L);
-            if (!lock) {
-                log.error("获取锁失败");
-                return false;
-            }
-            Thread.sleep(500L);
-            log.info("获取锁成功");
-            return true;
-        }catch (Exception e){
-            e.printStackTrace();
-            return false;
-        }finally {
-            redisLock.releaseLock(key, value);
-        }
+
+    /**
+     * 获取指定日期的值班人信息
+     *
+     * @param targetDate
+     * @return java.util.List<java.lang.Long>
+     * @date: 2024/1/18 16:18
+     */
+    @RequestMapping(path = "/getUserIdsByTargetDate", method = RequestMethod.GET)
+    public List<UserInfoVO> getUserIdsByTargetDate(@RequestParam("targetDate") String targetDate) {
+        List<UserInfo> userInfos = scheduleAppService.getUserIdsByDate(LocalDate.parse(targetDate));
+        return userInfos.stream().map(UserInfoVO::of).toList();
     }
 
+
+    
 
 
 }

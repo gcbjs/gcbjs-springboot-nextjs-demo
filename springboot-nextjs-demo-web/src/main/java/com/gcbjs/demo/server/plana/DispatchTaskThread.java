@@ -2,10 +2,12 @@ package com.gcbjs.demo.server.plana;
 
 import com.gcbjs.demo.mappers.model.TicketInfo;
 import com.gcbjs.demo.mappers.model.UserInfo;
+import com.gcbjs.demo.server.ScheduleAppService;
 import com.gcbjs.demo.server.plana.cmd.DispatchTaskCmd;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 
+import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -24,25 +26,39 @@ public class DispatchTaskThread implements Runnable {
 
     private UserQueryService userQueryService;
 
+    private ScheduleAppService scheduleAppService;
+
     private Long ticketId;
 
     public DispatchTaskThread(Long ticketId,
                               TicketAppService ticketAppService,
-                              UserQueryService userAppService) {
+                              UserQueryService userAppService,
+                              ScheduleAppService scheduleAppService) {
         this.ticketId = ticketId;
         this.ticketAppService = ticketAppService;
         this.userQueryService = userAppService;
+        this.scheduleAppService = scheduleAppService;
     }
 
     @Override
     public void run() {
         log.info("开始派单");
         try {
-            List<UserInfo> freeUsers = userQueryService.getFreeUsers();
+            //获取当前值班人员
+            List<UserInfo> userInfos = scheduleAppService.getUserIdsByDate(LocalDate.now());
+            if (CollectionUtils.isEmpty(userInfos)) {
+                log.info("当天没有值班人员,工单重新放入队列");
+                // 等待五秒钟重新派单
+                Thread.sleep(5000);
+                TicketQueue.getInstance().putTicket(this.ticketId);
+                return;
+            }
+            List<UserInfo> freeUsers = userQueryService.getUsersByUserIds(
+                    userInfos.stream().map(UserInfo::getUserId).toList());
             if (CollectionUtils.isEmpty(freeUsers)) {
                 log.info("没有空闲的业务员,工单重新放入队列");
                 // 等待五秒钟重新派单
-                Thread.sleep(2000);
+                Thread.sleep(5000);
                 TicketQueue.getInstance().putTicket(this.ticketId);
                 return;
             }

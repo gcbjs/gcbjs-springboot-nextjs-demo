@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gcbjs.demo.mappers.ScheduleMapper">
+  <resultMap id="BaseResultMap" type="com.gcbjs.demo.mappers.model.ScheduleInfo">
+    <!--@mbg.generated-->
+    <!--@Table schedule-->
+    <id column="schedule_id" jdbcType="BIGINT" property="scheduleId" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="date" jdbcType="TIMESTAMP" property="date" />
+    <result column="shift" jdbcType="VARCHAR" property="shift" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    schedule_id, user_id, `date`, shift, create_time
+  </sql>
+  <insert id="insert" keyColumn="schedule_id" keyProperty="scheduleId" parameterType="com.gcbjs.demo.mappers.model.ScheduleInfo" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into schedule (user_id, `date`, shift
+      )
+    values (#{userId,jdbcType=BIGINT}, #{date,jdbcType=TIMESTAMP}, #{shift,jdbcType=VARCHAR}
+      )
+  </insert>
+
+  <insert id="batchInsert" parameterType="java.util.List">
+    <!--@mbg.generated-->
+    insert into schedule (user_id, `date`, shift
+      )
+    values <foreach collection="records" item="record" separator=",">
+      (
+      #{record.userId,jdbcType=BIGINT}, #{record.date,jdbcType=TIMESTAMP}, #{record.shift,jdbcType=VARCHAR}
+      )
+    </foreach>
+  </insert>
+
+  <select id="findByUserId" resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    select
+    <include refid="Base_Column_List"/>
+    from schedule where user_id = #{userId}
+  </select>
+
+  <select id="getListByDate" parameterType="java.lang.String" resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    select
+    <include refid="Base_Column_List"/>
+    from schedule where DATE_FORMAT(`date`, '%Y-%m-%d') = #{date}
+  </select>
+
+</mapper>

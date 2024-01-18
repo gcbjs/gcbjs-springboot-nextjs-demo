@@ -7,10 +7,11 @@
         <result property="mobile" column="mobile" jdbcType="VARCHAR"/>
         <result property="workStatus" column="work_status" jdbcType="VARCHAR"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        user_id, name, mobile, work_status,update_time
+        user_id, name, mobile, work_status,update_time,create_time
     </sql>
 
     <select id="findByUserId" resultMap="BaseResultMap">
@@ -25,11 +26,11 @@
         from user_info
     </select>
 
-    <select id="findUsersByStatus" resultMap="BaseResultMap">
+    <select id="fetchListByUserIds" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from user_info
-        where work_status = #{workStatus}
+        where user_id in <foreach collection="userIds" item="userId" open="(" close=")" separator=",">#{userId}</foreach>
     </select>
 
     <update id="updateStatus" parameterType="com.gcbjs.demo.mappers.model.UserInfo">
