@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gcbjs.demo.mappers.NoteInfoMapper">
+  <resultMap id="BaseResultMap" type="com.gcbjs.demo.mappers.model.NoteInfo">
+    <!--@mbg.generated-->
+    <!--@Table note-->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="content" jdbcType="VARCHAR" property="content"/>
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+    <result column="title" jdbcType="VARCHAR" property="title" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, content,update_time,create_time,title
+  </sql>
+
+  <select id="getAllNotes" resultMap="BaseResultMap" >
+    <!--@mbg.generated-->
+    select
+    <include refid="Base_Column_List"/>
+    from note
+  </select>
+
+</mapper>
