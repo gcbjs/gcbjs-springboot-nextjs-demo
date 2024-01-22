@@ -1,6 +1,13 @@
 
 export async function getAllNotes() {
-   const data = await fetch('http://localhost:8080/note/getAllNotes')
+   const data = await fetch('http://localhost:8080/note/getAllNotes',{
+      next: { revalidate: 10 }
+   })
+   return data.json()
+}
+
+export async function getNote(noteId) {
+   const data = await fetch('http://localhost:8080/note/getNote?noteId='+noteId,{})
    return data.json()
 }
 

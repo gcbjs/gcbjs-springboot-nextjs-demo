@@ -18,7 +18,7 @@ public class NoteVO implements Serializable {
     /**
      * 主键
      */
-    private Long id;
+    private Long noteId;
 
     private String title;
 
@@ -30,7 +30,7 @@ public class NoteVO implements Serializable {
 
     public static NoteVO of(NoteInfo noteInfo) {
         NoteVO noteVO = new NoteVO();
-        noteVO.setId(noteInfo.getId());
+        noteVO.setNoteId(noteInfo.getId());
         noteVO.setTitle(noteInfo.getTitle());
         noteVO.setContent(noteInfo.getContent());
         noteVO.setUpdateTime(noteInfo.getUpdateTime());

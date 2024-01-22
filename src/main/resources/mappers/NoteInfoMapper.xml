@@ -22,4 +22,12 @@
     from note
   </select>
 
+  <select id="getByNoteId" resultMap="BaseResultMap"  parameterType="java.lang.Long">
+    <!--@mbg.generated-->
+    select
+    <include refid="Base_Column_List"/>
+    from note
+    where id = #{noteId}
+  </select>
+
 </mapper>
