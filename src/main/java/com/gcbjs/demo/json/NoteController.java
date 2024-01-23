@@ -1,13 +1,14 @@
 package com.gcbjs.demo.json;
 
+import com.gcbjs.demo.json.param.note.AddNoteParam;
+import com.gcbjs.demo.json.param.note.UpdateNoteParam;
 import com.gcbjs.demo.json.vo.NoteVO;
 import com.gcbjs.demo.mappers.NoteInfoMapper;
 import com.gcbjs.demo.mappers.model.NoteInfo;
+import com.gcbjs.demo.util.Result;
 import jakarta.annotation.Resource;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Objects;
@@ -28,18 +29,47 @@ public class NoteController {
 
 
     @RequestMapping(path = "/getAllNotes", method = RequestMethod.GET)
-    public List<NoteVO> getAllNotes() {
+    public Result<List<NoteVO>> getAllNotes() {
         List<NoteInfo> all = noteInfoMapper.getAllNotes();
-        return all.stream().map(NoteVO::of).toList();
+        return Result.success(all.stream().map(NoteVO::of).toList());
     }
 
     @RequestMapping(path = "/getNote", method = RequestMethod.GET)
-    public NoteVO getNote(@RequestParam("noteId") Long noteId) {
+    public Result<NoteVO> getNote(@RequestParam("noteId") Long noteId) {
         NoteInfo noteInfo = noteInfoMapper.getByNoteId(noteId);
         if (Objects.isNull(noteInfo)) {
             return null;
         }
-        return NoteVO.of(noteInfo);
+        return Result.success(NoteVO.of(noteInfo));
     }
+
+    @Transactional(rollbackFor = Exception.class)
+    @RequestMapping(path = "/updateNote", method = RequestMethod.POST)
+    public Result<Boolean> updateNote(@RequestBody UpdateNoteParam param) {
+        NoteInfo noteInfo = new NoteInfo();
+        noteInfo.setId(param.getNoteId());
+        noteInfo.setTitle(param.getTitle());
+        noteInfo.setContent(param.getContent());
+        noteInfoMapper.updateNote(noteInfo);
+        return Result.success(Boolean.TRUE);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @RequestMapping(path = "/addNote", method = RequestMethod.POST)
+    public Result<Long> addNote(@RequestBody AddNoteParam param) {
+        NoteInfo noteInfo = new NoteInfo();
+        noteInfo.setTitle(param.getTitle());
+        noteInfo.setContent(param.getContent());
+        noteInfoMapper.addNote(noteInfo);
+        return Result.success(noteInfo.getId());
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @RequestMapping(path = "/deleteNote", method = RequestMethod.POST)
+    public Result<Boolean> deleteNote(@RequestParam("noteId") Long noteId) {
+        noteInfoMapper.deleteNote(noteId);
+        return Result.success(Boolean.TRUE);
+    }
+
 
 }

@@ -10,4 +10,10 @@ public interface NoteInfoMapper {
     List<NoteInfo> getAllNotes();
 
     NoteInfo getByNoteId(@Param("noteId") Long noteId);
+
+    int updateNote(NoteInfo note);
+
+    int deleteNote(@Param("noteId") Long noteId);
+
+    int addNote(NoteInfo note);
 }

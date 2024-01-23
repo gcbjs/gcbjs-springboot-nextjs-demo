@@ -4,10 +4,10 @@ import Note from "@/components/Note";
 
 export default async function Page({params}) {
     const noteId = params.id;
-    const note = await getNote(noteId);
 
-    const sleep = ms => new Promise(r => setTimeout(r, ms));
-    await sleep(1000);
+    // const sleep = ms => new Promise(r => setTimeout(r, ms));
+    // await sleep(1000);
+    const note = await getNote(noteId);
 
     if (note === null) {
         return (

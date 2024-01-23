@@ -30,4 +30,29 @@
     where id = #{noteId}
   </select>
 
+  <update id="updateNote" parameterType="com.gcbjs.demo.mappers.model.NoteInfo">
+    <!--@mbg.generated-->
+    update note
+    <set>
+      <if test="title != null">
+        title = #{title},
+      </if>
+      <if test="content != null">
+        content = #{content},
+      </if>
+    </set>
+    where id = #{id}
+  </update>
+
+  <delete id="deleteNote" parameterType="java.lang.Long" >
+    <!--@mbg.generated-->
+    delete from note where id = #{noteId}
+  </delete>
+
+  <insert id="addNote" keyColumn="id" keyProperty="id"
+          parameterType="com.gcbjs.demo.mappers.model.NoteInfo" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into note (content, title) values (#{content,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR})
+  </insert>
+
 </mapper>

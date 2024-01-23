@@ -4,8 +4,8 @@ import {getAllNotes} from "@/lib/server";
 
 export default async function NoteList() {
 
-    const sleep = ms => new Promise(r => setTimeout(r, ms));
-    await sleep(1000);
+    // const sleep = ms => new Promise(r => setTimeout(r, ms));
+    // await sleep(3000);
     const notes = await getAllNotes()
 
     if (notes.length === 0) {

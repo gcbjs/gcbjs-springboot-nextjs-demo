@@ -1,6 +1,6 @@
 import SidebarNoteItemContent from "./SidebarNoteItemContent";
 import dayjs from "dayjs";
-import SidebarNoteItemHeader from "./SidebarNoteItemHeader";
+import SidebarNoteItemHeader from "../app/SidebarNoteItemHeader";
 
 export default function SidebarNoteItem({note}) {
     const {title,content='',updateTime,noteId} = note;
