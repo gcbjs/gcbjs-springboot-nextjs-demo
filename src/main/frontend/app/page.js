@@ -1,8 +1,10 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import React from "react";
+import {Button} from "antd";
 
 export default function Home() {
   return (
-    <h1>Hello,App!</h1>
+      <div className="App">
+        <Button type="primary">Button</Button>
+      </div>
   );
 }
