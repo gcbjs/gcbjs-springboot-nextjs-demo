@@ -6,20 +6,14 @@ import MyContent from "@/components/MyContent";
 import MyHeader from "@/components/MyHeader";
 import MySider from "@/components/MySider";
 
-const layoutStyle = {
-    display: 'flex',
-    width: '100%',
-    minHeight: '100%',
-};
-
 export default function RootLayout({children}) {
     return (
         <html lang="en">
         <body>
         <AntdRegistry>
-            <Layout >
+            <Layout hasSider={true}>
                 <MySider/>
-                <Layout >
+                <Layout>
                     <MyHeader/>
                     <MyContent>{children}</MyContent>
                     <MyFooter/>
