@@ -1,10 +1,8 @@
 'use client';
-import {Image, Menu} from "antd";
-import React, {Suspense} from "react";
-import {BarChartOutlined, UserOutlined, InsertRowAboveOutlined} from "@ant-design/icons";
-import {Layout} from "antd";
+import {Image, Layout} from "antd";
+import React from "react";
 import Link from "next/link";
-import MyMenuSkeleton from "@/components/MyMenuSkeleton";
+import MyMenuItemList from "@/components/MyMenuItemList";
 
 const {Sider} = Layout;
 
@@ -31,7 +29,7 @@ export default function MySider() {
                 </section>
             </Link>
             <nav>
-
+                <MyMenuItemList/>
             </nav>
         </Sider>
     )
