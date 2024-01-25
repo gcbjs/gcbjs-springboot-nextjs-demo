@@ -19,8 +19,11 @@ public class TicketQueue {
         static final TicketQueue INSTANCE = new TicketQueue();
     }
 
-    private final BlockingQueue<Long> waitingTicketQueue;
+    private final BlockingQueue<WaitLog> waitingTicketQueue;
 
+    /**
+     * 等待审核的工单列表
+     */
     private final BlockingQueue<AuditLog> auditLogQueue;
 
 
@@ -56,20 +59,20 @@ public class TicketQueue {
      * @return void
      * @date: 2024/1/16 14:12
      */
-    public void putTicket(Long ticketId) {
+    public void putTicket(WaitLog waitLog) {
         try {
-            waitingTicketQueue.put(ticketId);
+            waitingTicketQueue.put(waitLog);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
 
 
-    public void putAllTicket(List<Long> ticketIds) {
-        if (CollectionUtils.isEmpty(ticketIds)) {
+    public void putAllTicket(List<WaitLog> WaitLogs) {
+        if (CollectionUtils.isEmpty(WaitLogs)) {
             return;
         }
-        waitingTicketQueue.addAll(ticketIds);
+        waitingTicketQueue.addAll(WaitLogs);
     }
 
     /**
@@ -79,7 +82,7 @@ public class TicketQueue {
      * @return java.lang.Long
      * @date: 2024/1/16 14:12
      */
-    public Long takeTicket() {
+    public WaitLog takeTicket() {
         try {
             return waitingTicketQueue.take();
         } catch (InterruptedException e) {

@@ -1,5 +1,6 @@
 package com.gcbjs.demo.mappers.model;
 
+import com.gcbjs.demo.constants.AbilityLevelEnum;
 import com.gcbjs.demo.constants.WorkStatusEnum;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -42,6 +43,13 @@ public class UserInfo {
      * 更新时间
      */
     LocalDateTime updateTime;
+
+    /**
+     * 能力级别
+     */
+    AbilityLevelEnum abilityLevel;
+
+
 
     public void working() {
         this.workStatus = WorkStatusEnum.WORKING;

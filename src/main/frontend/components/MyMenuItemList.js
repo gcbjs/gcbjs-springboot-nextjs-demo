@@ -27,10 +27,6 @@ export default async function MyMenuItemList() {
 
     const router = useRouter();
 
-    const sleep = ms => new Promise(r => setTimeout(r, ms));
-    await sleep(2000);
-    //可以调用服务端获取菜单信息
-
 
     const handleClick = (e) => {
         console.log("click ", e);

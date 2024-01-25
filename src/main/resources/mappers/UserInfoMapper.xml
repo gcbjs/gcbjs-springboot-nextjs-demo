@@ -8,10 +8,11 @@
         <result property="workStatus" column="work_status" jdbcType="VARCHAR"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="abilityLevel" column="ability_level" jdbcType="VARCHAR"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        user_id, name, mobile, work_status,update_time,create_time
+        user_id, name, mobile, work_status,update_time,create_time,ability_level
     </sql>
 
     <select id="findByUserId" resultMap="BaseResultMap">

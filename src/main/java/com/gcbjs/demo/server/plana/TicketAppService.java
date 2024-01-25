@@ -1,15 +1,22 @@
 package com.gcbjs.demo.server.plana;
 
+import com.gcbjs.demo.json.param.QueryTicketParam;
 import com.gcbjs.demo.mappers.TicketInfoMapper;
 import com.gcbjs.demo.mappers.UserInfoMapper;
 import com.gcbjs.demo.mappers.model.TicketInfo;
 import com.gcbjs.demo.mappers.model.UserInfo;
+import com.gcbjs.demo.server.plana.cmd.CreateTicketCmd;
 import com.gcbjs.demo.server.plana.cmd.DispatchTaskCmd;
+import com.gcbjs.demo.util.Page;
 import com.gcbjs.demo.util.RedisLock;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import com.google.common.collect.Lists;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.UUID;
@@ -37,11 +44,17 @@ public class TicketAppService {
      * 调用派单主线程，去分配任务
      */
     @Transactional(rollbackFor = Exception.class)
-    public void receiveTicket() {
-        TicketInfo ticketInfo = TicketInfo.create();
+    public void receiveTicket(CreateTicketCmd cmd) {
+        TicketInfo ticketInfo = TicketInfo.create(cmd);
         ticketInfoMapper.insert(ticketInfo);
         //加入工单队列
-        TicketQueue.getInstance().putTicket(ticketInfo.getTicketId());
+        TicketQueue.getInstance().putTicket(WaitLog.builder()
+                        .ticketId(ticketInfo.getTicketId())
+                        .dealerType(ticketInfo.getDealerType())
+                        .urgentLevel(ticketInfo.getUrgentLevel())
+                        .userLevel(ticketInfo.getUserLevel())
+                        .loanAmount(ticketInfo.getLoanAmount())
+                .build());
     }
 
     /**
@@ -97,6 +110,17 @@ public class TicketAppService {
         userInfo.free();
         ticketInfoMapper.update(ticketInfo);
         userInfoMapper.updateStatus(userInfo);
+    }
+
+
+
+    public Page<TicketInfo> getTickets(QueryTicketParam param) {
+        PageInfo<TicketInfo> pageInfo = PageHelper.startPage(param.getPageIndex(), param.getPageSize())
+                .doSelectPageInfo(() -> ticketInfoMapper.findByParam(param));
+        if (CollectionUtils.isEmpty(pageInfo.getList())) {
+            return new Page<>((int) pageInfo.getTotal(),pageInfo.getPageNum(),pageInfo.getPageSize(), Lists.newArrayList());
+        }
+        return new Page<>((int) pageInfo.getTotal(),pageInfo.getPageNum(),pageInfo.getPageSize(),pageInfo.getList());
     }
 
 

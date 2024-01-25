@@ -11,19 +11,28 @@
         <result property="receiverId" column="receiver_id" jdbcType="BIGINT"/>
         <result property="receiverName" column="receiver_name" jdbcType="VARCHAR"/>
         <result property="finishTime" column="finish_time" jdbcType="TIMESTAMP"/>
+        <result property="loanAmount" column="loan_amount" jdbcType="BIGINT"/>
+        <result property="userLevel" column="user_level" jdbcType="VARCHAR"/>
+        <result property="dealerType" column="dealer_type" jdbcType="VARCHAR"/>
+        <result property="urgentLevel" column="urgent_level" jdbcType="VARCHAR"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        ticket_id, ticket_status, dispatch_time, priority, create_time, update_time, receiver_id, receiver_name,finish_time
+        ticket_id, ticket_status, dispatch_time, priority, create_time, update_time, receiver_id, receiver_name,
+        finish_time, loan_amount, user_level, dealer_type, urgent_level
     </sql>
 
     <insert id="insert" keyColumn="ticket_id" keyProperty="ticketId"
             parameterType="com.gcbjs.demo.mappers.model.TicketInfo" useGeneratedKeys="true">
         insert into ticket_info(
-            ticket_status,priority
+            ticket_status,priority,loan_amount, user_level, dealer_type, urgent_level
         ) values(
             #{ticketStatus,jdbcType=VARCHAR},
-            #{priority,jdbcType=INTEGER}
+            #{priority,jdbcType=INTEGER},
+            #{loanAmount,jdbcType=BIGINT},
+            #{userLevel,jdbcType=VARCHAR},
+            #{dealerType,jdbcType=VARCHAR},
+            #{urgentLevel,jdbcType=VARCHAR}
         )
     </insert>
 
@@ -67,6 +76,24 @@
         <include refid="Base_Column_List"/>
         from ticket_info
         where ticket_status = 'WAITING'
+    </select>
+
+    <select id="findByParam" parameterType="com.gcbjs.demo.json.param.QueryTicketParam" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from ticket_info
+        where 1 = 1
+        <if test="queryTicketParam.ticketStatus != null and queryTicketParam.ticketStatus !=''">
+            and ticket_status = #{queryTicketParam.ticketStatus,jdbcType=VARCHAR}
+        </if>
+        order by update_time desc
+
+    </select>
+
+    <select id="findAllGroupByStatus" resultType="java.lang.String" >
+        select
+            ticket_status
+        from ticket_info
     </select>
 
 </mapper>

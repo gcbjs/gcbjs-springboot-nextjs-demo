@@ -1,7 +1,7 @@
 package com.gcbjs.demo.mappers.model;
 
-import com.gcbjs.demo.constants.Constants;
-import com.gcbjs.demo.constants.TicketStatusEnum;
+import com.gcbjs.demo.constants.*;
+import com.gcbjs.demo.server.plana.cmd.CreateTicketCmd;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
@@ -60,12 +60,43 @@ public class TicketInfo {
      */
     LocalDateTime finishTime;
 
+
+    /**
+     * 贷款金额
+     */
+     Long loanAmount;
+
+    /**
+     * 用户级别
+     */
+    UserLevelEnum userLevel;
+
+
+    /**
+     * 车商类型（精品车商、普通车商）
+     */
+    DealerTypeEnum dealerType;
+
+    /**
+     * 紧急程度（1~9：:越大越紧急）
+     */
+    UrgentLevelEnum urgentLevel;
+
     protected TicketInfo() {
     }
 
-    public TicketInfo(TicketStatusEnum ticketStatus, Integer priority) {
+    public TicketInfo(TicketStatusEnum ticketStatus,
+                      Integer priority,
+                      Long loanAmount,
+                      UserLevelEnum userLevel,
+                      DealerTypeEnum dealerType,
+                      UrgentLevelEnum urgentLevel) {
         this.ticketStatus = ticketStatus;
         this.priority = priority;
+        this.loanAmount = loanAmount;
+        this.userLevel = userLevel;
+        this.dealerType = dealerType;
+        this.urgentLevel = urgentLevel;
     }
 
     /**
@@ -74,8 +105,12 @@ public class TicketInfo {
      * @return com.gcbjs.demo.repository.model.TicketEntity
      * @date: 2024/1/15 15:41
      */
-    public static TicketInfo create() {
-        return new TicketInfo(TicketStatusEnum.WAITING, Constants.DEFAULT_PRIORITY);
+    public static TicketInfo create(CreateTicketCmd cmd) {
+        return new TicketInfo(TicketStatusEnum.WAITING,
+                Constants.DEFAULT_PRIORITY,cmd.getLoanAmount(),
+                cmd.getUserLevel(),
+                cmd.getDealerType(),
+                cmd.getUrgentLevel());
     }
 
 

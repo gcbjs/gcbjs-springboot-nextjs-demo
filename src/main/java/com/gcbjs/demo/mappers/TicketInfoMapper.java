@@ -1,5 +1,6 @@
 package com.gcbjs.demo.mappers;
 
+import com.gcbjs.demo.json.param.QueryTicketParam;
 import com.gcbjs.demo.mappers.model.TicketInfo;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -23,4 +24,9 @@ public interface TicketInfoMapper {
     TicketInfo findByTicketId(@Param("ticketId") Long ticketId);
 
     List<TicketInfo> findWaitingTickets();
+
+    List<TicketInfo> findByParam(@Param("queryTicketParam") QueryTicketParam queryTicketParam);
+
+    List<String> findAllGroupByStatus();
+
 }

@@ -17,7 +17,11 @@ const columns = [
         title: '工作状态',
         dataIndex: 'workStatusDesc',
         key: 'workStatusDesc',
-    },
+    },{
+        title: '操作',
+        dataIndex: 'action',
+        key: 'action',
+    }
 ];
 
 export default async function Page() {

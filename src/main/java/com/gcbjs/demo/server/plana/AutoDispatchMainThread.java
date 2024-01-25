@@ -1,6 +1,7 @@
 package com.gcbjs.demo.server.plana;
 
 import com.gcbjs.demo.server.ScheduleAppService;
+import com.gcbjs.demo.server.plana.strategy.DispatchStrategy;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -29,6 +30,8 @@ public class AutoDispatchMainThread implements CommandLineRunner {
     private UserQueryService userAppService;
     @Resource
     private ScheduleAppService scheduleAppService;
+    @Resource
+    private DispatchStrategy greedyDispatchStrategy;
 
     private boolean isStop = false;
 
@@ -37,9 +40,9 @@ public class AutoDispatchMainThread implements CommandLineRunner {
         log.info("自动派单主线程启动");
         try{
             while (!isStop) {
-                Long ticketId = TicketQueue.getInstance().takeTicket();
-                if (Objects.nonNull(ticketId)) {
-                    createDispatchTaskThread(ticketId);
+                WaitLog waitLog = TicketQueue.getInstance().takeTicket();
+                if (Objects.nonNull(waitLog)) {
+                    createDispatchTaskThread(waitLog);
                 }
             }
         }catch (Exception e){
@@ -47,11 +50,12 @@ public class AutoDispatchMainThread implements CommandLineRunner {
         }
     }
 
-    private void createDispatchTaskThread(Long ticketId) {
-        DispatchTaskThread dispatchTaskThread = new DispatchTaskThread(ticketId,
+    private void createDispatchTaskThread(WaitLog waitLog) {
+        DispatchTaskThread dispatchTaskThread = new DispatchTaskThread(waitLog,
                 ticketAppService,
                 userAppService,
-                scheduleAppService);
+                scheduleAppService,
+                greedyDispatchStrategy);
         ticketTaskExecutor.execute(dispatchTaskThread);
     }
 }
