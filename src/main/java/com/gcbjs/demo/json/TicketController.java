@@ -1,8 +1,8 @@
 package com.gcbjs.demo.json;
 
-import com.gcbjs.demo.constants.WorkStatusEnum;
 import com.gcbjs.demo.json.param.CreateTicketParam;
 import com.gcbjs.demo.json.param.QueryTicketParam;
+import com.gcbjs.demo.json.param.QueryUserParam;
 import com.gcbjs.demo.json.vo.TicketVO;
 import com.gcbjs.demo.json.vo.UserInfoVO;
 import com.gcbjs.demo.mappers.TicketInfoMapper;
@@ -16,6 +16,8 @@ import com.gcbjs.demo.server.plana.WaitLog;
 import com.gcbjs.demo.server.plana.cmd.CreateTicketCmd;
 import com.gcbjs.demo.util.Page;
 import com.gcbjs.demo.util.Result;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
@@ -84,10 +86,20 @@ public class TicketController {
 
 
 
-    @RequestMapping(path = "/userList", method = RequestMethod.GET)
-    public List<UserInfoVO> userList() {
-        List<UserInfo> list = userInfoMapper.findAll();
-        return list.stream().map(UserInfoVO::of).toList();
+    @RequestMapping(path = "/userPage", method = RequestMethod.POST)
+    public Result<Page<UserInfoVO>> userPage(@RequestBody QueryUserParam param) {
+        PageInfo<UserInfo> pageInfo = PageHelper.startPage(param.getPageIndex(), param.getPageSize()).doSelectPageInfo(
+                () -> userInfoMapper.findList(param)
+        );
+        if (CollectionUtils.isEmpty(pageInfo.getList())) {
+            return Result.success(new Page<>((int)pageInfo.getTotal(),
+                    pageInfo.getPageNum(),
+                    pageInfo.getPageSize(),
+                    List.of()));
+        }
+        return Result.success(new Page<>((int)pageInfo.getTotal(),
+                pageInfo.getPageNum(),
+                pageInfo.getPageSize(),pageInfo.getList().stream().map(UserInfoVO::of).toList()));
     }
 
 
@@ -125,17 +137,17 @@ public class TicketController {
     }
 
 
-    /**
-     * 实时获取用户队列
-     */
-    @RequestMapping(path = "/getUserQueue", method = RequestMethod.GET)
-    public Map<WorkStatusEnum, List<UserInfoVO>> getUserQueue() {
-        List<UserInfo> all = userInfoMapper.findAll();
-        //按照状态分组
-        return all.stream()
-                .collect(Collectors.groupingBy(UserInfo::getWorkStatus,
-                        Collectors.mapping(UserInfoVO::of, Collectors.toList())));
-    }
+//    /**
+//     * 实时获取用户队列
+//     */
+//    @RequestMapping(path = "/getUserQueue", method = RequestMethod.GET)
+//    public Map<WorkStatusEnum, List<UserInfoVO>> getUserQueue() {
+//        List<UserInfo> all = userInfoMapper.findList();
+//        //按照状态分组
+//        return all.stream()
+//                .collect(Collectors.groupingBy(UserInfo::getWorkStatus,
+//                        Collectors.mapping(UserInfoVO::of, Collectors.toList())));
+//    }
 
     @RequestMapping(path = "/finishTicket", method = RequestMethod.POST)
     public void finishTicket(@RequestParam("ticketId") Long ticketId) {

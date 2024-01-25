@@ -98,6 +98,7 @@ public class GreedyDispatchStrategy implements DispatchStrategy {
                 break;
         }
 
+        //客户能力等级
         switch (user.getAbilityLevel()) {
             case HIGH:
                 score = score.add(BigDecimal.valueOf(0.3));

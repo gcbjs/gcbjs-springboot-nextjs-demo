@@ -17,7 +17,13 @@ const columns = [
         title: '工作状态',
         dataIndex: 'workStatusDesc',
         key: 'workStatusDesc',
-    },{
+    },
+    {
+        title: '能力等级',
+        dataIndex: 'abilityLevelDesc',
+        key: 'abilityLevelDesc',
+    },
+    {
         title: '操作',
         dataIndex: 'action',
         key: 'action',
@@ -27,12 +33,13 @@ const columns = [
 export default async function Page() {
 
     const data = await getUserList();
+    const {items} = data
 
-    if (!data) {
+    if (!data && items.length === 0) {
         return <Empty />;
     }
 
     return (
-        <Table dataSource={data} columns={columns} />
+        <Table dataSource={items} columns={columns} />
     )
 }

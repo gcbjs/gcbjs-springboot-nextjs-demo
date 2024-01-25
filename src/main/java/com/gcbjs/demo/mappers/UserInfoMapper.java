@@ -1,5 +1,6 @@
 package com.gcbjs.demo.mappers;
 
+import com.gcbjs.demo.json.param.QueryUserParam;
 import com.gcbjs.demo.mappers.model.UserInfo;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -18,7 +19,7 @@ public interface UserInfoMapper {
 
     UserInfo findByUserId(@Param("userId") Long userId);
 
-    List<UserInfo> findAll();
+    List<UserInfo> findList(@Param("param") QueryUserParam param);
 
     List<UserInfo> fetchListByUserIds(@Param("userIds") List<Long> userIds);
 

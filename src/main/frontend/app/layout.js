@@ -9,7 +9,7 @@ import MySider from "@/components/MySider";
 export default function RootLayout({children}) {
     return (
         <html lang="en">
-        <body>
+        <body >
         <AntdRegistry>
             <Layout hasSider={true}>
                 <MySider/>

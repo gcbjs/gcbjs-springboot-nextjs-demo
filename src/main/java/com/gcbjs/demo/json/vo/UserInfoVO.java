@@ -39,6 +39,11 @@ public class UserInfoVO implements Serializable {
      */
     String workStatus;
 
+    /**
+     * 能力等级描述
+     */
+    String abilityLevelDesc;
+
     public static UserInfoVO of(UserInfo userInfo) {
         UserInfoVO userInfoVO = new UserInfoVO();
         userInfoVO.setUserId(userInfo.getUserId());
@@ -46,6 +51,7 @@ public class UserInfoVO implements Serializable {
         userInfoVO.setMobile(userInfo.getMobile());
         userInfoVO.setWorkStatus(userInfo.getWorkStatus().name());
         userInfoVO.setWorkStatusDesc(userInfo.getWorkStatus().getDesc());
+        userInfoVO.setAbilityLevelDesc(userInfo.getAbilityLevel().getDesc());
         return userInfoVO;
     }
 }

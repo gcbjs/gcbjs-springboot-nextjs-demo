@@ -17,7 +17,7 @@ export default function MyContent({children}) {
             <div
                 style={{
                     padding: 24,
-                    minHeight: 360,
+                    minHeight:'100vh',
                     background: colorBgContainer,
                     borderRadius: borderRadiusLG,
                 }}

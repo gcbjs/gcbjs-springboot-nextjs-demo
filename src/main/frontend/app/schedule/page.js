@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import {Badge, Calendar, Tag} from "antd";
+import {Calendar, Tag,theme} from "antd";
 import dayjs from "dayjs";
 
 const scheduleData = [
@@ -33,7 +33,6 @@ const scheduleData = [
 
 
 const getListData = (value) => {
-    console.log(dayjs(value).format("YYYY-MM-DD"));
     return scheduleData.map(v => {
         if (v.scheduleDate === dayjs(value).format("YYYY-MM-DD")) {
             return v;
@@ -50,6 +49,13 @@ const getMonthData = (value) => {
 };
 
 export default function Page() {
+
+    const { token } = theme.useToken();
+
+    const wrapperStyle = {
+        border: `1px solid ${token.colorBorderSecondary}`,
+        borderRadius: token.borderRadiusLG,
+    };
 
     const onPanelChange = (value, mode) => {
         console.log(value.format('YYYY-MM-DD'), mode);
@@ -95,6 +101,8 @@ export default function Page() {
     };
 
     return (
-        <Calendar onPanelChange={onPanelChange} onSelect={onSelect} cellRender={cellRender}/>
+        <div style={wrapperStyle}>
+            <Calendar onPanelChange={onPanelChange} onSelect={onSelect} cellRender={cellRender}/>
+        </div>
     )
 }
