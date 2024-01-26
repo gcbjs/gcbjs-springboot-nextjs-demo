@@ -9,7 +9,7 @@ const customItems = [
     {
         key: '/ticket',
         icon: <BarChartOutlined/>,
-        label: '工单看板'
+        label: '工单管理'
     },
     {
         key: '/user',
@@ -23,13 +23,12 @@ const customItems = [
     }
 ]
 
-export default async function MyMenuItemList() {
+export default function MyMenuItemList() {
 
     const router = useRouter();
 
 
     const handleClick = (e) => {
-        console.log("click ", e);
         router.push(e.key);
     };
 

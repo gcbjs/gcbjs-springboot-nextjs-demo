@@ -20,9 +20,10 @@ async function fetchData(url, options) {
 
 
 export async function getUserList() {
-    const url = 'http://localhost:8080/ticketApi/userPage';
+    const url = 'http://localhost:8080/ticketApi/userpage';
     const options = {
         method: 'POST',
+        cache: 'no-store',
         headers: {
             'Content-Type': 'application/json',
         },
@@ -31,5 +32,54 @@ export async function getUserList() {
             pageIndex:1,
         })
     };
+    return await fetchData(url, options);
+}
+
+export async function getTicketPage() {
+    const url = 'http://localhost:8080/ticketApi/ticketpage';
+    const options = {
+        method: 'POST',
+        cache: 'no-store',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            pageSize:10,
+            pageIndex:1,
+        })
+    };
+    return await fetchData(url, options);
+}
+
+export async function getUserIdsByTargetDate(targetDate){
+    const url = `http://localhost:8080/ticketApi/getUserIdsByTargetDate?targetDate=${targetDate}`;
+    const options = {
+        cache: 'no-store',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    }
+    return await fetchData(url, options);
+}
+
+export async function countTodayTicket(day) {
+    const url = `http://localhost:8080/ticketApi/countTodayTicket?day=${day}`;
+    const options = {
+        cache: 'no-store',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    }
+    return await fetchData(url, options);
+}
+
+export async function getTicketStatusCountForCurrentWeek(){
+    const url = 'http://localhost:8080/ticketApi/getTicketStatusCountForCurrentWeek';
+    const options = {
+        cache: 'no-store',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    }
     return await fetchData(url, options);
 }

@@ -17,6 +17,7 @@
         <result property="urgentLevel" column="urgent_level" jdbcType="VARCHAR"/>
     </resultMap>
 
+
     <sql id="Base_Column_List">
         ticket_id, ticket_status, dispatch_time, priority, create_time, update_time, receiver_id, receiver_name,
         finish_time, loan_amount, user_level, dealer_type, urgent_level
@@ -94,6 +95,20 @@
         select
             ticket_status
         from ticket_info
+    </select>
+
+    <select id="countTodayTicket" resultType="java.lang.Long" parameterType="java.lang.String" >
+        select
+            count(1)
+        from ticket_info
+        where date_format(create_time,'%Y-%m-%d') = #{day}
+    </select>
+
+    <select id="getTicketStatusCountForCurrentWeek" resultType="Map">
+        SELECT ticket_status, COUNT(*) AS count
+        FROM ticket_info
+        WHERE create_time BETWEEN #{startOfWeek} AND #{endOfWeek}
+        GROUP BY ticket_status
     </select>
 
 </mapper>

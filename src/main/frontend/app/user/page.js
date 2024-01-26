@@ -35,7 +35,7 @@ export default async function Page() {
     const data = await getUserList();
     const {items} = data
 
-    if (!data && items.length === 0) {
+    if (!data || items.length === 0) {
         return <Empty />;
     }
 

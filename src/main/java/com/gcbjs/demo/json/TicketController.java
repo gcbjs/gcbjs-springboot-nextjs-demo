@@ -1,5 +1,8 @@
 package com.gcbjs.demo.json;
 
+import com.alibaba.fastjson.JSON;
+import com.gcbjs.demo.constants.TicketStatusEnum;
+import com.gcbjs.demo.json.param.CountTicketParam;
 import com.gcbjs.demo.json.param.CreateTicketParam;
 import com.gcbjs.demo.json.param.QueryTicketParam;
 import com.gcbjs.demo.json.param.QueryUserParam;
@@ -18,11 +21,13 @@ import com.gcbjs.demo.util.Page;
 import com.gcbjs.demo.util.Result;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.google.common.collect.Maps;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -57,7 +62,7 @@ public class TicketController {
     * @return com.gcbjs.demo.util.Result<com.gcbjs.demo.util.Page<com.gcbjs.demo.json.vo.TicketVO>>
     * @date: 2024/1/24 17:20
     */
-    @RequestMapping(path = "/page", method = RequestMethod.GET)
+    @RequestMapping(path = "/ticketpage", method = RequestMethod.POST)
     public Result<Page<TicketVO>> page(@RequestBody QueryTicketParam param) {
         Page<TicketInfo> tickets = ticketAppService.getTickets(param);
         return Result.success(new Page<>(tickets.getTotalNumber(),
@@ -86,7 +91,7 @@ public class TicketController {
 
 
 
-    @RequestMapping(path = "/userPage", method = RequestMethod.POST)
+    @RequestMapping(path = "/userpage", method = RequestMethod.POST)
     public Result<Page<UserInfoVO>> userPage(@RequestBody QueryUserParam param) {
         PageInfo<UserInfo> pageInfo = PageHelper.startPage(param.getPageIndex(), param.getPageSize()).doSelectPageInfo(
                 () -> userInfoMapper.findList(param)
@@ -149,25 +154,22 @@ public class TicketController {
 //                        Collectors.mapping(UserInfoVO::of, Collectors.toList())));
 //    }
 
+    /**
+    * 统计当日的工单数量
+    * @param 
+    * @return com.gcbjs.demo.util.Result<java.lang.Long>
+    * @date: 2024/1/25 16:50
+    */
+    @RequestMapping(path = "/countTodayTicket", method = RequestMethod.GET)
+    public Result<Long> countTodayTicket(@RequestParam("day") String day) {
+        return Result.success(ticketInfoMapper.countTodayTicket(day));
+    }
+
+
     @RequestMapping(path = "/finishTicket", method = RequestMethod.POST)
     public void finishTicket(@RequestParam("ticketId") Long ticketId) {
         ticketAppService.finish(ticketId);
     }
-
-    /**
-     * 实时获取工单数据
-     * 待分配、处理中、已处理
-     */
-    @RequestMapping(path = "/getDailyDataInRealTime", method = RequestMethod.GET)
-    public Map<String, Integer> getDailyDataInRealTime() {
-
-        return null;
-    }
-
-    /**
-     * 工单手动改派
-     */
-
 
     /**
      * 获取指定日期的值班人信息
@@ -177,10 +179,43 @@ public class TicketController {
      * @date: 2024/1/18 16:18
      */
     @RequestMapping(path = "/getUserIdsByTargetDate", method = RequestMethod.GET)
-    public List<UserInfoVO> getUserIdsByTargetDate(@RequestParam("targetDate") String targetDate) {
+    public Result<List<UserInfoVO>> getUserIdsByTargetDate(@RequestParam("targetDate") String targetDate) {
         List<UserInfo> userInfos = scheduleAppService.getUserIdsByDate(LocalDate.parse(targetDate));
-        return userInfos.stream().map(UserInfoVO::of).toList();
+        if (CollectionUtils.isEmpty(userInfos)) {
+            return Result.success(List.of());
+        }
+        return Result.success(userInfos.stream().map(UserInfoVO::of).toList());
     }
+
+    @RequestMapping(path = "/getTicketStatusCountForCurrentWeek", method = RequestMethod.GET)
+    public Result<Map<String,Long>> getTicketStatusCountForCurrentWeek(){
+
+        // 获取本周的起始日期
+        LocalDate startOfWeek = LocalDate.now().with(DayOfWeek.MONDAY);
+
+        // 获取本周的结束日期
+        LocalDate endOfWeek = LocalDate.now().with(DayOfWeek.SUNDAY);
+        List<Map<String, Object>> count = ticketInfoMapper.getTicketStatusCountForCurrentWeek(startOfWeek, endOfWeek);
+        return Result.success(countWeekNum(count));
+    }
+
+    private Map<String,Long> countWeekNum(List<Map<String, Object>> count) {
+        if (CollectionUtils.isEmpty(count)) {
+            return null;
+        }
+        Map<String,Long> result = Maps.newHashMap();
+        long total = 0L;
+        for (Map<String, Object> map : count) {
+            total += (long) map.get("count");
+            if (TicketStatusEnum.HANDLED.name().equals(map.get("ticket_status").toString())) {
+                result.put(map.get("ticket_status").toString(), (Long) map.get("count"));
+            }
+        }
+        result.put("TOTAL", total);
+        return result;
+    }
+
+
 
 
 
