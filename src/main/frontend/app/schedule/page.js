@@ -79,9 +79,7 @@ export default function Page() {
     };
 
     const getMonthData = (value) => {
-        if (value.month() === 8) {
-            return 1394;
-        }
+        return null
     };
 
     return (
