@@ -1,68 +1,34 @@
 'use client';
-import React from 'react';
-import {Calendar, Tag,theme} from "antd";
+import React, {useEffect, useState} from 'react';
+import {Button, Calendar, Tag, theme} from "antd";
 import dayjs from "dayjs";
-
-const scheduleData = [
-    {
-        name: '小小鱼',
-        scheduleDate: '2024-01-08',
-        scheduleDesc: '全天'
-    },
-    {
-        name: '张三',
-        scheduleDate: '2024-01-08',
-        scheduleDesc: '全天'
-    },
-    {
-        name: '李四',
-        scheduleDate: '2024-01-16',
-        scheduleDesc: '全天'
-    },
-    {
-        name: '王五',
-        scheduleDate: '2024-01-28',
-        scheduleDesc: '全天'
-    },
-    {
-        name: '朱六',
-        scheduleDate: '2024-01-28',
-        scheduleDesc: '全天'
-    }
-]
+import locale from 'antd/es/date-picker/locale/zh_CN';
+import 'dayjs/locale/zh-cn';
+import {scheduleList} from "@/lib/server";
 
 
-const getListData = (value) => {
-    return scheduleData.map(v => {
-        if (v.scheduleDate === dayjs(value).format("YYYY-MM-DD")) {
-            return v;
-        }else {
-            return null
-        }
-    })
-};
-
-const getMonthData = (value) => {
-    if (value.month() === 8) {
-        return 1394;
-    }
-};
 
 export default function Page() {
 
     const { token } = theme.useToken();
 
-    const wrapperStyle = {
-        border: `1px solid ${token.colorBorderSecondary}`,
-        borderRadius: token.borderRadiusLG,
-    };
+    const [data,setData] = useState([])
+
+    const fetchData = async () =>{
+        const data = await scheduleList(null);
+        setData(data)
+    }
+
+    useEffect(() =>{
+        fetchData()
+    },[])
 
     const onPanelChange = (value, mode) => {
-        console.log(value.format('YYYY-MM-DD'), mode);
+        console.log("onPanelChange",value.format('YYYY-MM-DD'), mode);
     };
 
     const onSelect = (date, info) => {
-        console.log(date.format('YYYY-MM-DD'), info)
+        console.log("onSelect",date.format('YYYY-MM-DD'), info)
     }
 
     const monthCellRender = (value) => {
@@ -74,6 +40,7 @@ export default function Page() {
             </div>
         ) : null;
     };
+
     const dateCellRender = (value) => {
         const listData = getListData(value);
         return (
@@ -86,7 +53,7 @@ export default function Page() {
                             <li key={index} style={{
                                 "listStyle": "none"
                             }}>
-                                <span>{item.name}</span><Tag color="green">{item.scheduleDesc}</Tag>
+                                <Tag color="green">{item.name}</Tag>
                             </li>
                         )
                     }
@@ -100,9 +67,27 @@ export default function Page() {
         return info.originNode;
     };
 
+
+    const getListData = (value) => {
+        return data.map(v => {
+            if (v.scheduleDateStr === dayjs(value).format("YYYY-MM-DD")) {
+                return v;
+            }else {
+                return null
+            }
+        })
+    };
+
+    const getMonthData = (value) => {
+        if (value.month() === 8) {
+            return 1394;
+        }
+    };
+
     return (
-        <div style={wrapperStyle}>
-            <Calendar onPanelChange={onPanelChange} onSelect={onSelect} cellRender={cellRender}/>
+        <div>
+            <Calendar locale={locale} cellRender={cellRender} onSelect={onSelect} onPanelChange={onPanelChange}/>
         </div>
+
     )
 }

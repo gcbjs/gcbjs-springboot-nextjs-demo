@@ -1,10 +1,12 @@
 package com.gcbjs.demo.server;
 
+import com.gcbjs.demo.json.param.QueryScheduleParam;
 import com.gcbjs.demo.mappers.ScheduleMapper;
 import com.gcbjs.demo.mappers.UserInfoMapper;
 import com.gcbjs.demo.mappers.model.ScheduleInfo;
 import com.gcbjs.demo.mappers.model.UserInfo;
 import com.gcbjs.demo.server.cmd.ScheduleCreateCmd;
+import com.gcbjs.demo.util.Page;
 import com.gcbjs.demo.util.RedisLock;
 import com.google.common.collect.Lists;
 import jakarta.annotation.Resource;
@@ -51,8 +53,13 @@ public class ScheduleAppService {
                 log.error("用户不存在");
                 return false;
             }
+            //TODO 判断当天是否有排班
             scheduleMapper.batchInsert(cmd.getDetails().stream().map(detail ->
-                    new ScheduleInfo(cmd.getUserId(), detail.getDate(), detail.getShiftInfoEnum())
+                    new ScheduleInfo(cmd.getUserId(),
+                            detail.getDate(),
+                            detail.getShiftInfoEnum(),
+                            userInfo.getName(),
+                            userInfo.getMobile())
             ).toList());
             return true;
         }catch (Exception e){
@@ -66,13 +73,12 @@ public class ScheduleAppService {
     /**
      * 根据制定日期获取当天的排版人员id
      */
-    public List<UserInfo> getUserIdsByDate(LocalDate date) {
+    public List<ScheduleInfo> getUserIdsByDate(LocalDate date) {
         List<ScheduleInfo> list = scheduleMapper.getListByDate(date.toString());
         if (CollectionUtils.isEmpty(list)) {
             return null;
         }
-        List<Long> userIds = list.stream().map(ScheduleInfo::getUserId).toList();
-        return userInfoMapper.fetchListByUserIds(userIds);
+        return list;
     }
 
 }

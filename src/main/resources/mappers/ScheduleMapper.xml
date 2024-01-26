@@ -9,26 +9,35 @@
     <result column="date" jdbcType="TIMESTAMP" property="date" />
     <result column="shift" jdbcType="VARCHAR" property="shift" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="name" jdbcType="VARCHAR" property="name"/>
+    <result column="mobile" jdbcType="VARCHAR" property="mobile"/>
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    schedule_id, user_id, `date`, shift, create_time
+    schedule_id, user_id, `date`, shift, create_time, name, mobile
   </sql>
   <insert id="insert" keyColumn="schedule_id" keyProperty="scheduleId" parameterType="com.gcbjs.demo.mappers.model.ScheduleInfo" useGeneratedKeys="true">
     <!--@mbg.generated-->
-    insert into schedule (user_id, `date`, shift
+    insert into schedule (user_id, `date`, shift,name,mobile
       )
-    values (#{userId,jdbcType=BIGINT}, #{date,jdbcType=TIMESTAMP}, #{shift,jdbcType=VARCHAR}
+    values (#{userId,jdbcType=BIGINT}, #{date,jdbcType=TIMESTAMP},
+    #{shift,jdbcType=VARCHAR},
+    #{name,jdbcType=VARCHAR},
+    #{mobile,jdbcType=VARCHAR}
       )
   </insert>
 
   <insert id="batchInsert" parameterType="java.util.List">
     <!--@mbg.generated-->
-    insert into schedule (user_id, `date`, shift
+    insert into schedule (user_id, `date`, shift,name,mobile
       )
     values <foreach collection="records" item="record" separator=",">
       (
-      #{record.userId,jdbcType=BIGINT}, #{record.date,jdbcType=TIMESTAMP}, #{record.shift,jdbcType=VARCHAR}
+      #{record.userId,jdbcType=BIGINT},
+    #{record.date,jdbcType=TIMESTAMP},
+    #{record.shift,jdbcType=VARCHAR},
+    #{record.name,jdbcType=VARCHAR},
+    #{record.mobile,jdbcType=VARCHAR}
       )
     </foreach>
   </insert>
@@ -45,6 +54,21 @@
     select
     <include refid="Base_Column_List"/>
     from schedule where DATE_FORMAT(`date`, '%Y-%m-%d') = #{date}
+  </select>
+
+  <select id="getScheduleList" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from schedule
+    where
+    1=1
+    <if test="userId != null and userId !=''">
+      and user_id = #{userId}
+    </if>
+    <if test="year != null and month !=null">
+      and DATE_FORMAT(`date`, '%Y') = #{year} and DATE_FORMAT(`date`, '%m') = #{month}
+    </if>
+    order by create_time desc
   </select>
 
 </mapper>

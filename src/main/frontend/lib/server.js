@@ -83,3 +83,21 @@ export async function getTicketStatusCountForCurrentWeek(){
     }
     return await fetchData(url, options);
 }
+
+
+export async function scheduleList(userId){
+    let url = 'http://localhost:8080/ticketApi/scheduleList';
+
+    // 检查 userId 是否为 null
+    if (userId !== null) {
+        // 如果不为 null，则拼接到 URL 中
+        url += `?userId=${userId}`;
+    }
+    const options = {
+        cache: 'no-store',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    }
+    return await fetchData(url, options);
+}

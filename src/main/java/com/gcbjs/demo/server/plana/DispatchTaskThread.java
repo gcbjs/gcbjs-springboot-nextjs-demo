@@ -1,6 +1,7 @@
 package com.gcbjs.demo.server.plana;
 
 import com.gcbjs.demo.constants.WorkStatusEnum;
+import com.gcbjs.demo.mappers.model.ScheduleInfo;
 import com.gcbjs.demo.mappers.model.TicketInfo;
 import com.gcbjs.demo.mappers.model.UserInfo;
 import com.gcbjs.demo.server.ScheduleAppService;
@@ -52,15 +53,17 @@ public class DispatchTaskThread implements Runnable {
         log.info("开始派单");
         try {
             //获取当前值班人员
-            List<UserInfo> userInfos = scheduleAppService.getUserIdsByDate(LocalDate.now());
-            if (CollectionUtils.isEmpty(userInfos)) {
+            List<ScheduleInfo> scheduleInfos = scheduleAppService.getUserIdsByDate(LocalDate.now());
+            if (CollectionUtils.isEmpty(scheduleInfos)) {
                 log.info("当天没有值班人员,工单重新放入队列");
                 // 等待五秒钟重新派单-会有队列积压风险
                 Thread.sleep(5000);
                 TicketQueue.getInstance().putTicket(this.waitLog);
                 return;
             }
-            List<UserInfo> freeUsers = userInfos.stream()
+            List<UserInfo> users = userQueryService.getUsersByUserIds(scheduleInfos.stream()
+                    .map(ScheduleInfo::getUserId).toList());
+            List<UserInfo> freeUsers = users.stream()
                     .filter(v -> v.getWorkStatus() == WorkStatusEnum.FREE).toList();
             if (CollectionUtils.isEmpty(freeUsers)) {
                 log.info("没有空闲的业务员,工单重新放入队列");

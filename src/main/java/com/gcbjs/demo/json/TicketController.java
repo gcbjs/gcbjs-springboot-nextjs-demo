@@ -2,17 +2,18 @@ package com.gcbjs.demo.json;
 
 import com.alibaba.fastjson.JSON;
 import com.gcbjs.demo.constants.TicketStatusEnum;
-import com.gcbjs.demo.json.param.CountTicketParam;
-import com.gcbjs.demo.json.param.CreateTicketParam;
-import com.gcbjs.demo.json.param.QueryTicketParam;
-import com.gcbjs.demo.json.param.QueryUserParam;
+import com.gcbjs.demo.json.param.*;
+import com.gcbjs.demo.json.vo.ScheduleInfoVO;
 import com.gcbjs.demo.json.vo.TicketVO;
 import com.gcbjs.demo.json.vo.UserInfoVO;
+import com.gcbjs.demo.mappers.ScheduleMapper;
 import com.gcbjs.demo.mappers.TicketInfoMapper;
 import com.gcbjs.demo.mappers.UserInfoMapper;
+import com.gcbjs.demo.mappers.model.ScheduleInfo;
 import com.gcbjs.demo.mappers.model.TicketInfo;
 import com.gcbjs.demo.mappers.model.UserInfo;
 import com.gcbjs.demo.server.ScheduleAppService;
+import com.gcbjs.demo.server.cmd.ScheduleCreateCmd;
 import com.gcbjs.demo.server.plana.TicketAppService;
 import com.gcbjs.demo.server.plana.TicketQueue;
 import com.gcbjs.demo.server.plana.WaitLog;
@@ -21,6 +22,7 @@ import com.gcbjs.demo.util.Page;
 import com.gcbjs.demo.util.Result;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +33,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -53,6 +56,8 @@ public class TicketController {
     private ScheduleAppService scheduleAppService;
     @Resource
     private TicketInfoMapper ticketInfoMapper;
+    @Resource
+    private ScheduleMapper scheduleMapper;
 
 
     /**
@@ -96,15 +101,7 @@ public class TicketController {
         PageInfo<UserInfo> pageInfo = PageHelper.startPage(param.getPageIndex(), param.getPageSize()).doSelectPageInfo(
                 () -> userInfoMapper.findList(param)
         );
-        if (CollectionUtils.isEmpty(pageInfo.getList())) {
-            return Result.success(new Page<>((int)pageInfo.getTotal(),
-                    pageInfo.getPageNum(),
-                    pageInfo.getPageSize(),
-                    List.of()));
-        }
-        return Result.success(new Page<>((int)pageInfo.getTotal(),
-                pageInfo.getPageNum(),
-                pageInfo.getPageSize(),pageInfo.getList().stream().map(UserInfoVO::of).toList()));
+        return convertToPageResult(pageInfo, UserInfoVO::of);
     }
 
 
@@ -142,18 +139,6 @@ public class TicketController {
     }
 
 
-//    /**
-//     * 实时获取用户队列
-//     */
-//    @RequestMapping(path = "/getUserQueue", method = RequestMethod.GET)
-//    public Map<WorkStatusEnum, List<UserInfoVO>> getUserQueue() {
-//        List<UserInfo> all = userInfoMapper.findList();
-//        //按照状态分组
-//        return all.stream()
-//                .collect(Collectors.groupingBy(UserInfo::getWorkStatus,
-//                        Collectors.mapping(UserInfoVO::of, Collectors.toList())));
-//    }
-
     /**
     * 统计当日的工单数量
     * @param 
@@ -179,14 +164,20 @@ public class TicketController {
      * @date: 2024/1/18 16:18
      */
     @RequestMapping(path = "/getUserIdsByTargetDate", method = RequestMethod.GET)
-    public Result<List<UserInfoVO>> getUserIdsByTargetDate(@RequestParam("targetDate") String targetDate) {
-        List<UserInfo> userInfos = scheduleAppService.getUserIdsByDate(LocalDate.parse(targetDate));
-        if (CollectionUtils.isEmpty(userInfos)) {
+    public Result<List<ScheduleInfoVO>> getUserIdsByTargetDate(@RequestParam("targetDate") String targetDate) {
+        List<ScheduleInfo> scheduleInfos = scheduleAppService.getUserIdsByDate(LocalDate.parse(targetDate));
+        if (CollectionUtils.isEmpty(scheduleInfos)) {
             return Result.success(List.of());
         }
-        return Result.success(userInfos.stream().map(UserInfoVO::of).toList());
+        return Result.success(scheduleInfos.stream().map(ScheduleInfoVO::of).toList());
     }
 
+    /**
+    * 统计每周不同状态的工单数量
+    * @param 
+    * @return com.gcbjs.demo.util.Result<java.util.Map<java.lang.String,java.lang.Long>>
+    * @date: 2024/1/26 10:17
+    */
     @RequestMapping(path = "/getTicketStatusCountForCurrentWeek", method = RequestMethod.GET)
     public Result<Map<String,Long>> getTicketStatusCountForCurrentWeek(){
 
@@ -216,7 +207,43 @@ public class TicketController {
     }
 
 
+    @RequestMapping(path = "/assignDuty", method = RequestMethod.POST)
+    public Result<Boolean> assignDuty(@RequestBody AssignDutyParam param) {
+        ScheduleCreateCmd.Detail detail = new ScheduleCreateCmd.Detail(param.getDutyDate(), param.getDutyType());
+        List<ScheduleCreateCmd.Detail> details = Lists.newArrayList(detail);
+        ScheduleCreateCmd scheduleCreateCmd = ScheduleCreateCmd.builder()
+                .userId(param.getUserId())
+                .details(details)
+                .build();
+        return Result.success(scheduleAppService.scheduling(scheduleCreateCmd));
 
+    }
+
+
+    @RequestMapping(path = "/scheduleList", method = RequestMethod.GET)
+    public Result<List<ScheduleInfoVO>> scheduleList(@RequestParam(value = "userId",required = false) Long userId) {
+
+        String month = String.format("%02d", LocalDate.now().getMonth().getValue());
+        int year = LocalDate.now().getYear();
+        List<ScheduleInfo> list = scheduleMapper.getScheduleList(userId, String.valueOf(year), month);
+        if (CollectionUtils.isEmpty(list)) {
+            return Result.success(List.of());
+        }
+        return Result.success(list.stream().map(ScheduleInfoVO::of).toList());
+    }
+
+
+    private static <T,R> Result<Page<R>> convertToPageResult(PageInfo<T> pageInfo, Function<T, R> converter) {
+        if (CollectionUtils.isEmpty(pageInfo.getList())) {
+            return Result.success(new Page<>((int)pageInfo.getTotal(),
+                    pageInfo.getPageNum(),
+                    pageInfo.getPageSize(),
+                    List.of()));
+        }
+        return Result.success(new Page<>((int)pageInfo.getTotal(),
+                pageInfo.getPageNum(),
+                pageInfo.getPageSize(),pageInfo.getList().stream().map(converter).toList()));
+    }
 
 
 

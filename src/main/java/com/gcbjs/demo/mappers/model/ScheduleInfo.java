@@ -25,6 +25,10 @@ public class ScheduleInfo {
     */
     private Long userId;
 
+    private String name;
+
+    private String mobile;
+
     /**
     * 排班日期
     */
@@ -39,7 +43,6 @@ public class ScheduleInfo {
 
 
 
-
     private ScheduleInfo(){
 
     }
@@ -48,9 +51,13 @@ public class ScheduleInfo {
 
     public ScheduleInfo(Long userId,
                         LocalDate date,
-                        ShiftInfoEnum shift) {
+                        ShiftInfoEnum shift,
+                        String name,
+                        String mobile) {
         this.userId = userId;
         this.date = date;
         this.shift = shift;
+        this.name = name;
+        this.mobile = mobile;
     }
 }

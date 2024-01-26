@@ -43,5 +43,10 @@ public class ScheduleCreateCmd {
          * 班次
          */
         ShiftInfoEnum shiftInfoEnum;
+
+        public Detail(String date,String dutyType) {
+            this.date = LocalDate.parse(date);
+            this.shiftInfoEnum = ShiftInfoEnum.valueOf(dutyType);
+        }
     }
 }
