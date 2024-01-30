@@ -23,6 +23,7 @@
         <frontend.basedir>${project.basedir}/src/main/frontend</frontend.basedir>
     </properties>
         <dependencies>
+
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-web</artifactId>
@@ -86,6 +87,18 @@
                 <artifactId>pagehelper-spring-boot-starter</artifactId>
                 <version>2.1.0</version>
             </dependency>
+
+
+            <dependency>
+                <groupId>com.yomahub</groupId>
+                <artifactId>liteflow-spring-boot-starter</artifactId>
+                <version>2.11.4.2</version>
+            </dependency>
+            <!--<dependency>-->
+            <!--    <groupId>com.yomahub</groupId>-->
+            <!--    <artifactId>liteflow-rule-sql</artifactId>-->
+            <!--    <version>2.11.4.2</version>-->
+            <!--</dependency>-->
 
         </dependencies>
 
