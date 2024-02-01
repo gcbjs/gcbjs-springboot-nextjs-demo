@@ -1,6 +1,6 @@
 package com.gcbjs.demo.json;
 
-import com.alibaba.fastjson.JSON;
+import com.alibaba.excel.EasyExcel;
 import com.gcbjs.demo.constants.TicketStatusEnum;
 import com.gcbjs.demo.json.param.*;
 import com.gcbjs.demo.json.vo.ScheduleInfoVO;
@@ -28,7 +28,9 @@ import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.List;
@@ -244,6 +246,16 @@ public class TicketController {
                 pageInfo.getPageNum(),
                 pageInfo.getPageSize(),pageInfo.getList().stream().map(converter).toList()));
     }
+
+
+
+    @RequestMapping(path = "/uploadFile", method = RequestMethod.POST)
+    public Result<Boolean> uploadFile(MultipartFile file) throws IOException {
+        EasyExcel.read(file.getInputStream(), DirtyUserData.class, new DirtyUserDataListener(scheduleAppService)).sheet().doRead();
+        return Result.success(true);
+    }
+
+
 
 
 
