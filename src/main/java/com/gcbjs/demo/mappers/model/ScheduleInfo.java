@@ -3,6 +3,7 @@ package com.gcbjs.demo.mappers.model;
 import com.gcbjs.demo.constants.ShiftInfoEnum;
 import lombok.Getter;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -14,7 +15,7 @@ import java.time.LocalDateTime;
   *@Version 1.0
 **/
 @Getter
-public class ScheduleInfo {
+public class ScheduleInfo implements Serializable {
     /**
     * 主键
     */

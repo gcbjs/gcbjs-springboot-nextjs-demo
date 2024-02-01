@@ -11,6 +11,7 @@ import com.gcbjs.demo.util.RedisLock;
 import com.google.common.collect.Lists;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -73,6 +74,7 @@ public class ScheduleAppService {
     /**
      * 根据制定日期获取当天的排版人员id
      */
+    @Cacheable(value = "schedule", key = "#date.toString()", unless = "#result == null")
     public List<ScheduleInfo> getUserIdsByDate(LocalDate date) {
         List<ScheduleInfo> list = scheduleMapper.getListByDate(date.toString());
         if (CollectionUtils.isEmpty(list)) {
