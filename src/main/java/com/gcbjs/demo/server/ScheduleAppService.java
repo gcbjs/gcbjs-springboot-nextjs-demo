@@ -8,6 +8,7 @@ import com.gcbjs.demo.mappers.model.UserInfo;
 import com.gcbjs.demo.server.cmd.ScheduleCreateCmd;
 import com.gcbjs.demo.util.Page;
 import com.gcbjs.demo.util.RedisLock;
+import com.github.benmanes.caffeine.cache.Cache;
 import com.google.common.collect.Lists;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -74,7 +75,6 @@ public class ScheduleAppService {
     /**
      * 根据制定日期获取当天的排版人员id
      */
-    @Cacheable(value = "schedule", key = "#date.toString()", unless = "#result == null")
     public List<ScheduleInfo> getUserIdsByDate(LocalDate date) {
         List<ScheduleInfo> list = scheduleMapper.getListByDate(date.toString());
         if (CollectionUtils.isEmpty(list)) {

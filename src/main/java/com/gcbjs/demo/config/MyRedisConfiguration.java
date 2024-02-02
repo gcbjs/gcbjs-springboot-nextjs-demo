@@ -3,7 +3,6 @@ package com.gcbjs.demo.config;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.boot.autoconfigure.cache.CacheProperties;
@@ -21,7 +20,14 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 /**
  * @ClassName MyRedisConfiguration
- * @Description TODO
+ * @Description
+ * 优点：
+ * 使用注解，简化操作
+ * 缓存管理器，方便多种实现切换缓存源,如Redis,Guava Cache等
+ * 支持事务, 即事物回滚时,缓存同时自动回滚
+ * 缺点：
+ * 不支持TTL，不能为每个 key 设置单独过期时间 expires time，
+ * 针对多线程没有专门的处理，所以当多线程时，是会产生数据不一致性的。
  * @Author yuzhangbin
  * @Date 2024/2/1 14:14
  * @Version 1.0
@@ -46,11 +52,11 @@ public class MyRedisConfiguration {
     }
 
     @Bean
-    public RedisTemplate<Object, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory,
+    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory,
                                                        Jackson2JsonRedisSerializer<Object> jackson2JsonRedisSerializer) {
 
 
-        RedisTemplate<Object,Object> template = new RedisTemplate<>();
+        RedisTemplate<String,Object> template = new RedisTemplate<>();
         //连接工厂，用于建立与 Redis 服务器的连接。
         template.setConnectionFactory(redisConnectionFactory);
         //key序列化
@@ -73,6 +79,7 @@ public class MyRedisConfiguration {
     public RedisCacheConfiguration redisCacheConfiguration(CacheProperties cacheProperties,
                                                            Jackson2JsonRedisSerializer<Object> jackson2JsonRedisSerializer) {
         RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig();
+        //key不需要改变
         config = config.serializeValuesWith(
                 RedisSerializationContext
                         .SerializationPair

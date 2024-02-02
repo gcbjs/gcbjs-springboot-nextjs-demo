@@ -182,6 +182,7 @@ public class TicketController {
     * @return com.gcbjs.demo.util.Result<java.util.Map<java.lang.String,java.lang.Long>>
     * @date: 2024/1/26 10:17
     */
+    @Cacheable(value = "ticketStatusCount", key = "'getTicketStatusCountForCurrentWeek'")
     @RequestMapping(path = "/getTicketStatusCountForCurrentWeek", method = RequestMethod.GET)
     public Result<Map<String,Long>> getTicketStatusCountForCurrentWeek(){
 
