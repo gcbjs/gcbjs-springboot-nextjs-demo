@@ -8,6 +8,10 @@
 - 直接查询数据库
 - aop切面
 同一手机号、邮箱一定时间内限制调用次数
-- redis + aop
+- redis 自增实现increment
 
 ###3、监控预警
+[监控文章](https://ketao1989.github.io/2020/11/26/2020-11-26-biz-monitor-experience/)
+- 分析长期趋势
+- 跨时间范围比较
+- 问题关联分析

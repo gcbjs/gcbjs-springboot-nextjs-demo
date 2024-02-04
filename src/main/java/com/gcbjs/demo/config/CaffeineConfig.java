@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 @Configuration
 public class CaffeineConfig {
 
-    @Bean
+    @Bean(name = "caffeineCache")
     public Cache<String,Object> caffeineCache(){
         return Caffeine.newBuilder()
                 //初始大小
@@ -26,4 +26,15 @@ public class CaffeineConfig {
                 .expireAfterWrite(60, TimeUnit.SECONDS)
                 .build();
     }
+
+    @Bean(name = "caffeineLogCache")
+    public Cache<String,Object> caffeineLogCache(){
+        return Caffeine.newBuilder()
+                //初始大小
+                .initialCapacity(128)
+                .maximumSize(1024)
+                .expireAfterWrite(30, TimeUnit.SECONDS)
+                .build();
+    }
+
 }

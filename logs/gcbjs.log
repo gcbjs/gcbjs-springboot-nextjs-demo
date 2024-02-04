@@ -1,0 +1,28 @@
+2024-02-04 23:21:35,779 [restartedMain] INFO  -[StartupInfoLogger.java:50]- Starting DemoApplication using Java 17.0.9 with PID 19936 (/Users/yuzhangbin/Desktop/springboot-nextjs-demo/target/classes started by yuzhangbin in /Users/yuzhangbin/Desktop/springboot-nextjs-demo)
+2024-02-04 23:21:35,783 [restartedMain] INFO  -[SpringApplication.java:662]- No active profile set, falling back to 1 default profile: "default"
+2024-02-04 23:21:41,915 [restartedMain] INFO  -[StartupInfoLogger.java:56]- Started DemoApplication in 6.516 seconds (process running for 7.449)
+2024-02-04 23:21:41,924 [restartedMain] INFO  -[AutoDispatchMainThread.java:40]- 自动派单主线程启动
+2024-02-04 23:22:02,649 [restartedMain] INFO  -[StartupInfoLogger.java:50]- Starting DemoApplication using Java 17.0.9 with PID 20010 (/Users/yuzhangbin/Desktop/springboot-nextjs-demo/target/classes started by yuzhangbin in /Users/yuzhangbin/Desktop/springboot-nextjs-demo)
+2024-02-04 23:22:02,652 [restartedMain] INFO  -[SpringApplication.java:662]- No active profile set, falling back to 1 default profile: "default"
+2024-02-04 23:22:06,988 [restartedMain] INFO  -[StartupInfoLogger.java:56]- Started DemoApplication in 4.606 seconds (process running for 5.428)
+2024-02-04 23:22:06,994 [restartedMain] INFO  -[AutoDispatchMainThread.java:40]- 自动派单主线程启动
+2024-02-04 23:22:16,784 [http-nio-8080-exec-2] INFO  -[TraceController.java:31]- 进入ping
+2024-02-04 23:22:16,869 [http-nio-8080-exec-1] INFO  -[TraceController.java:51]- study:{"success":true,"code":"200","message":"success","data":"pong study"}
+2024-02-04 23:22:16,873 [http-nio-8080-exec-3] INFO  -[TraceController.java:37]- this is info log
+2024-02-04 23:22:16,873 [http-nio-8080-exec-3] ERROR -[TraceController.java:38]- this is error log
+2024-02-04 23:22:16,873 [http-nio-8080-exec-3] WARN  -[TraceController.java:40]- this is warn log
+2024-02-04 23:22:16,875 [http-nio-8080-exec-1] INFO  -[TraceController.java:56]- floor:{"success":true,"code":"200","message":"success","data":"123"}
+2024-02-04 23:22:16,879 [http-nio-8080-exec-4] INFO  -[TraceController.java:31]- 进入ping
+2024-02-04 23:22:16,882 [http-nio-8080-exec-1] INFO  -[TraceController.java:61]- room:{"success":true,"code":"200","message":"success","data":"pong study"}
+2024-02-04 23:24:27,652 [restartedMain] INFO  -[StartupInfoLogger.java:50]- Starting DemoApplication using Java 17.0.9 with PID 20389 (/Users/yuzhangbin/Desktop/springboot-nextjs-demo/target/classes started by yuzhangbin in /Users/yuzhangbin/Desktop/springboot-nextjs-demo)
+2024-02-04 23:24:27,655 [restartedMain] INFO  -[SpringApplication.java:662]- No active profile set, falling back to 1 default profile: "default"
+2024-02-04 23:24:31,971 [restartedMain] INFO  -[StartupInfoLogger.java:56]- Started DemoApplication in 4.591 seconds (process running for 5.436)
+2024-02-04 23:24:31,977 [restartedMain] INFO  -[AutoDispatchMainThread.java:40]- 自动派单主线程启动
+2024-02-04 23:24:39,156 [http-nio-8080-exec-2] INFO  -[TraceController.java:31]- 进入ping
+2024-02-04 23:24:39,229 [http-nio-8080-exec-1] INFO  -[TraceController.java:51]- study:{"success":true,"code":"200","message":"success","data":"pong study"}
+2024-02-04 23:24:39,232 [http-nio-8080-exec-3] INFO  -[TraceController.java:37]- this is info log
+2024-02-04 23:24:39,232 [http-nio-8080-exec-3] ERROR -[TraceController.java:38]- this is error log
+2024-02-04 23:24:39,232 [http-nio-8080-exec-3] WARN  -[TraceController.java:40]- this is warn log
+2024-02-04 23:24:39,235 [http-nio-8080-exec-1] INFO  -[TraceController.java:56]- floor:{"success":true,"code":"200","message":"success","data":"123"}
+2024-02-04 23:24:39,238 [http-nio-8080-exec-4] INFO  -[TraceController.java:31]- 进入ping
+2024-02-04 23:24:39,240 [http-nio-8080-exec-1] INFO  -[TraceController.java:61]- room:{"success":true,"code":"200","message":"success","data":"pong study"}
