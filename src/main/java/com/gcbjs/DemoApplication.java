@@ -12,7 +12,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @Version 1.0
  **/
 @SpringBootApplication
-@MapperScan("com.gcbjs.demo.mappers")
+@MapperScan({
+        "com.gcbjs.demo.mappers","com.gcbjs.highconcurrency.antitheftbrush.limiter.captcha"
+})
 public class DemoApplication {
 
     public static void main(String[] args) {
