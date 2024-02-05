@@ -1,0 +1,11 @@
+groups:
+- name: businessAlert
+  rules:
+  - alert: balanceAlert
+    expr: balanceGauge{application="springboot-nextjs-demo",currency="btc"} < 500.0
+    for: 20s
+    labels:
+      severity: page
+    annotations:
+      summary: "{{ $labels.currency }} balance is insufficient"
+      description: "{{ $labels.currency }} balance: {{ $value }}"

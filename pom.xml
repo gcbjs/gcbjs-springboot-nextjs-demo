@@ -30,6 +30,7 @@
                 <artifactId>spring-boot-starter-web</artifactId>
             </dependency>
 
+            <!--Spring Boot 提供的一个开发者工具，旨在提升开发人员的开发体验和效率:自动应用重启、实时类加载、全局配置文件热加载 -->
             <!--<dependency>-->
             <!--    <groupId>org.springframework.boot</groupId>-->
             <!--    <artifactId>spring-boot-devtools</artifactId>-->
@@ -142,26 +143,34 @@
             <dependency>
                 <groupId>io.zipkin.reporter2</groupId>
                 <artifactId>zipkin-reporter-brave</artifactId>
+                <version>3.2.1</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-actuator</artifactId>
             </dependency>
+
             <!--链路集成-->
 
-        </dependencies>
-
-    <dependencyManagement>
-        <dependencies>
+            <!--监控-->
             <dependency>
                 <groupId>io.micrometer</groupId>
-                <artifactId>micrometer-tracing-bom</artifactId>
-                <version>1.2.0</version>
-                <type>pom</type>
-                <scope>import</scope>
+                <artifactId>micrometer-registry-prometheus</artifactId>
             </dependency>
+
         </dependencies>
-    </dependencyManagement>
+
+    <!--<dependencyManagement>-->
+    <!--    <dependencies>-->
+    <!--        <dependency>-->
+    <!--            <groupId>io.micrometer</groupId>-->
+    <!--            <artifactId>micrometer-tracing-bom</artifactId>-->
+    <!--            <version>1.2.0</version>-->
+    <!--            <type>pom</type>-->
+    <!--            <scope>import</scope>-->
+    <!--        </dependency>-->
+    <!--    </dependencies>-->
+    <!--</dependencyManagement>-->
 
 
     <build>
