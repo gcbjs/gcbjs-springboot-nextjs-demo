@@ -1,4 +1,4 @@
-package com.gcbjs.demo.config;
+package com.gcbjs.config;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
@@ -31,8 +31,8 @@ public class CaffeineConfig {
     public Cache<String,Object> caffeineLogCache(){
         return Caffeine.newBuilder()
                 //初始大小
-                .initialCapacity(128)
-                .maximumSize(1024)
+                .initialCapacity(64)
+                .maximumSize(512)
                 .expireAfterWrite(30, TimeUnit.SECONDS)
                 .build();
     }

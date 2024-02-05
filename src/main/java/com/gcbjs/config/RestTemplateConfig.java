@@ -1,4 +1,4 @@
-package com.gcbjs.demo.config;
+package com.gcbjs.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -39,6 +39,8 @@ public class TraceController {
         log.debug("this is debug log");
         log.warn("this is warn log");
         log.trace("this is trace log");
+        log.error("this is error log2");
+        log.error("this is error log3");
         return Result.success("123");
     }
 

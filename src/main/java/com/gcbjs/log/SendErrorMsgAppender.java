@@ -3,10 +3,11 @@ package com.gcbjs.log;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.UnsynchronizedAppenderBase;
+import com.gcbjs.util.ApplicationContextUtil;
 import com.github.benmanes.caffeine.cache.Cache;
-import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+
+import java.util.Objects;
 
 /**
  * @ClassName SendErrorMsgAppender
@@ -16,11 +17,8 @@ import org.springframework.stereotype.Component;
  * @Version 1.0
  **/
 @Slf4j
-@Component
 public class SendErrorMsgAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
 
-    @Resource
-    private Cache<String, Object> caffeineLogCache;
 
     @Override
     protected void append(ILoggingEvent iLoggingEvent) {
@@ -29,6 +27,12 @@ public class SendErrorMsgAppender extends UnsynchronizedAppenderBase<ILoggingEve
         }
         //获取链路id
         String traceId = iLoggingEvent.getMDCPropertyMap().get("traceId");
-        System.out.println("traceId:" + traceId);
+        Cache<String,Object> caffeineCache = (Cache<String, Object>) ApplicationContextUtil.getBean("caffeineLogCache");
+        Object present = caffeineCache.getIfPresent(traceId);
+        if(Objects.nonNull(present)){
+            return;
+        }
+        caffeineCache.put(traceId,Boolean.TRUE);
+        log.info("异常信息推送钉钉:{}",iLoggingEvent.getMessage());
     }
 }
