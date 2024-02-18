@@ -9,20 +9,27 @@
 ###2、后端
 ####2.1 悲观锁
 核心：同一时刻只有一个请求
-synchronized、reetrantLock=>都是本地锁，不适合分布式
+synchronized、reentrantLock=>都是本地锁，不适合分布式
 数据库提供了排它锁（事务前提下，其他事务不能对它加任何类型锁）->innodb+有索引字段使用
 有死锁问题、线程阻塞
 `select ... for update`
 ####2.2 唯一索引
 表唯一索引（只适用于插入）
+可用来兜底
 ####2.3 去重表
 本质上还是唯一索引，建立一张请求记录表，requestId是唯一索引
 ####2.4 乐观锁
 版本号机制或CAS算法。
 只适用于更新数据场景
+
+update goods set price =100,version=version+1 where id =1 and version=1
 ####2.5 分布式锁 （用得比较多）
 同一时刻只有一个请求
 redis或者zookeeper
+
+##### 常见实现方式
+###### 1.1 关系型数据库mysql
+实现方式就是唯一索引、排它锁。存在性能问题
 ####2.6 Token机制
 服务端生成token，客户端在请求时带过来，服务端进行解析
 -token有时效性（短）
