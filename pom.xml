@@ -158,6 +158,14 @@
                 <artifactId>micrometer-registry-prometheus</artifactId>
             </dependency>
 
+
+            <!-- sentinel 流量治理-->
+            <dependency>
+                <groupId>com.alibaba.csp</groupId>
+                <artifactId>sentinel-core</artifactId>
+                <version>1.8.6</version>
+            </dependency>
+
         </dependencies>
 
     <!--<dependencyManagement>-->
